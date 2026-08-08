@@ -3,6 +3,7 @@ using LMS.Repositories;
 using LMS.Repositories.Interfaces;
 using LMS.Services;
 using LMS.Services.Interfaces;
+using LMS.Services.Layout;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<IAssignmentService, AssignmentService>();
+builder.Services.AddScoped<SidebarService>();
 
 var app = builder.Build();
 

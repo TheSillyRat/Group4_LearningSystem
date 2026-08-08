@@ -1,0 +1,33 @@
+﻿@model LMS.Models.Assignment
+
+<div class="container-fluid">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0">@Model.AssignmentTitle</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Description:</strong> @Model.Description</p>
+            <p><strong>Due Date:</strong> <span class="text-danger">@Model.DueDate.ToString("yyyy-MM-dd HH:mm")</span></p>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-primary">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Submit Your Work</h5>
+        </div>
+        <div class="card-body">
+            <form asp-area="Student" asp-controller="Assignment" asp-action="SubmitWork" method="post">
+                <input type="hidden" name="assignmentId" value="@Model.AssignmentId" />
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Student ID (Mock):</label>
+                    <input type="number" name="studentId" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">File URL / Drive Link:</label>
+                    <input type="url" name="filePath" class="form-control" placeholder="https://..." required />
+                </div>
+                <button type="submit" class="btn btn-success">Submit Assignment</button>
+            </form>
+        </div>
+    </div>
+</div>

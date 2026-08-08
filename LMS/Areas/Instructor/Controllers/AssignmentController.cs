@@ -73,5 +73,7 @@ namespace LMS.Areas.Instructor.Controllers
 
             return RedirectToAction(nameof(Details), new { id = assignmentId });
         }
+
+
     }
 }

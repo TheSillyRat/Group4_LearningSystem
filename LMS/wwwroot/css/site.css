@@ -29,3 +29,233 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+/* =========================================
+   LMS MAIN LAYOUT
+   ========================================= */
+
+.layout-container {
+    display: flex;
+    min-height: calc(100vh - 60px);
+}
+
+
+/* =========================================
+   SIDEBAR
+   ========================================= */
+
+.sidebar {
+    width: 260px;
+    min-height: 100vh;
+    flex-shrink: 0;
+    background-color: #ffffff;
+    border-right: 1px solid #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    align-self: flex-start;
+}
+
+
+/* User information */
+
+.sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 18px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.sidebar-avatar {
+    width: 45px;
+    height: 45px;
+    flex-shrink: 0;
+}
+
+    .sidebar-avatar img,
+    .default-avatar {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+    }
+
+    .sidebar-avatar img {
+        object-fit: cover;
+    }
+
+.default-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e8f0fe;
+    color: #2563eb;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.sidebar-user-info {
+    min-width: 0;
+}
+
+.sidebar-name {
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-email {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-role {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+
+/* =========================================
+   SIDEBAR NAVIGATION
+   ========================================= */
+
+.sidebar-navigation {
+    padding: 14px 10px;
+}
+
+.sidebar-item {
+    margin-bottom: 4px;
+}
+
+.sidebar-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #374151;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+    .sidebar-link:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+
+    .sidebar-link.active {
+        background-color: #eff6ff;
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+    .sidebar-link > i:first-child {
+        width: 20px;
+        text-align: center;
+        font-size: 17px;
+    }
+
+
+/* Parent menu */
+
+.sidebar-parent {
+    text-align: left;
+}
+
+    .sidebar-parent span {
+        flex: 1;
+    }
+
+.sidebar-arrow {
+    margin-left: auto;
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+
+/* =========================================
+   SUBMENU
+   ========================================= */
+
+.sidebar-submenu {
+    display: none;
+    padding-left: 44px;
+    padding-top: 3px;
+    padding-bottom: 4px;
+}
+
+    .sidebar-submenu.open {
+        display: block;
+    }
+
+.sidebar-sublink {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 6px;
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 13px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+    .sidebar-sublink:hover {
+        background-color: #f3f4f6;
+        color: #111827;
+    }
+
+    .sidebar-sublink.active {
+        color: #2563eb;
+        font-weight: 600;
+    }
+
+
+/* Badge */
+
+.sidebar-badge {
+    margin-left: auto;
+    padding: 2px 7px;
+    border-radius: 10px;
+    background-color: #ef4444;
+    color: white;
+    font-size: 10px;
+}
+
+
+/* =========================================
+   MAIN CONTENT
+   ========================================= */
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 24px;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 220px;
+    }
+
+    .main-content {
+        padding: 16px;
+    }
+}

@@ -1,0 +1,196 @@
+﻿@{
+    ViewData["Title"] = "Create Assignment";
+}
+
+<div class="assignment-page">
+
+    <div class="assignment-card">
+
+        <!-- Header -->
+        <div class="assignment-header">
+            <h1>Create Assignment</h1>
+            <p>Create a new assignment for your course</p>
+        </div>
+
+        <form asp-action="Create"
+              asp-controller="Assignment"
+              method="post"
+              enctype="multipart/form-data">
+
+            <!-- Title + Course -->
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="Title">Assignment Title</label>
+
+                    <input type="text"
+                           id="Title"
+                           name="Title"
+                           class="form-control"
+                           placeholder="Enter assignment title" />
+                </div>
+
+                <div class="form-group">
+                    <label for="CourseId">Course</label>
+
+                    <select id="CourseId"
+                            name="CourseId"
+                            class="form-control">
+
+                        <option value="">Select course</option>
+
+                        <!-- Demo data - will be replaced by Model later -->
+                        <option value="1">
+                            Introduction to Programming
+                        </option>
+
+                        <option value="2">
+                            Database Management
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+
+            <!-- Module + Due Date -->
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="ModuleId">Module / Section</label>
+
+                    <select id="ModuleId"
+                            name="ModuleId"
+                            class="form-control">
+
+                        <option value="">Select module</option>
+
+                        <!-- Demo data -->
+                        <option value="1">
+                            Module 1 - Introduction
+                        </option>
+
+                        <option value="2">
+                            Module 2 - Basic Concepts
+                        </option>
+
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="DueDate">Due Date</label>
+
+                    <input type="datetime-local"
+                           id="DueDate"
+                           name="DueDate"
+                           class="form-control" />
+                </div>
+
+            </div>
+
+
+            <!-- Description -->
+            <div class="form-group full-width">
+
+                <label for="Description">
+                    Description / Instructions
+                </label>
+
+                <textarea id="Description"
+                          name="Description"
+                          class="form-control assignment-description"
+                          placeholder="Write instructions for students..."></textarea>
+
+            </div>
+
+
+            <!-- Maximum Score + Attachment -->
+            <div class="form-row">
+
+                <div class="form-group">
+
+                    <label for="MaxScore">
+                        Maximum Score
+                    </label>
+
+                    <input type="number"
+                           id="MaxScore"
+                           name="MaxScore"
+                           class="form-control"
+                           value="100"
+                           min="0" />
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="Attachment">
+                        Attachment
+                    </label>
+
+                    <div class="file-upload">
+
+                        <label for="Attachment"
+                               class="file-upload-button">
+
+                            <i class="bi bi-paperclip"></i>
+                            Add File
+
+                        </label>
+
+                        <input type="file"
+                               id="Attachment"
+                               name="Attachment"
+                               hidden />
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Options -->
+            <div class="form-group options-group">
+
+                <label>Options</label>
+
+                <div class="assignment-options">
+
+                    <label class="checkbox-option">
+
+                        <input type="checkbox"
+                               name="PublishImmediately"
+                               value="true" />
+
+                        <span>Publish immediately</span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+            <div class="form-actions">
+
+                <button type="submit"
+                        class="btn-create">
+                    Create Assignment
+                </button>
+
+                <a asp-action="Index"
+                   class="btn-cancel">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
