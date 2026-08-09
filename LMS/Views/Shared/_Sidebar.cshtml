@@ -1,0 +1,112 @@
+﻿@model LMS.ViewModels.Layout.SidebarViewModel
+
+<aside class="sidebar">
+
+    <!-- User information -->
+    <div class="sidebar-user">
+
+        <div class="sidebar-avatar">
+            @if (!string.IsNullOrEmpty(Model.AvatarUrl))
+            {
+                <img src="@Model.AvatarUrl" alt="Avatar" />
+            }
+            else
+            {
+                <div class="default-avatar">
+                    @Model.DisplayName.Substring(0, 1).ToUpper()
+                </div>
+            }
+        </div>
+
+        <div class="sidebar-user-info">
+            <div class="sidebar-name">
+                @Model.DisplayName
+            </div>
+
+            <div class="sidebar-email">
+                @Model.Email
+            </div>
+
+            <div class="sidebar-role">
+                @Model.RoleName
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- Navigation -->
+    <nav class="sidebar-navigation">
+
+        @foreach (var item in Model.Items)
+        {
+            <div class="sidebar-item">
+
+                @if (item.Children.Any())
+                {
+                   
+                    <button type="button"
+                            class="sidebar-link sidebar-parent"
+                            data-sidebar-toggle>
+
+                        @if (!string.IsNullOrEmpty(item.Icon))
+                        {
+                            <i class="@item.Icon"></i>
+                        }
+
+                        <span>@item.Title</span>
+
+                        <i class="bi bi-chevron-down sidebar-arrow"></i>
+
+                    </button>
+
+                    <div class="sidebar-submenu">
+
+                        @foreach (var child in item.Children)
+                        {
+                            <a href="@child.Url"
+                               class="sidebar-sublink @(child.IsActive ? "active" : "")">
+
+                                <span>@child.Title</span>
+
+                                @if (!string.IsNullOrEmpty(child.Badge))
+                                {
+                                    <span class="sidebar-badge">
+                                        @child.Badge
+                                    </span>
+                                }
+
+                            </a>
+                        }
+
+                    </div>
+                }
+                else
+                {
+                    
+                    <a href="@item.Url"
+                       class="sidebar-link @(item.IsActive ? "active" : "")">
+
+                        @if (!string.IsNullOrEmpty(item.Icon))
+                        {
+                            <i class="@item.Icon"></i>
+                        }
+
+                        <span>@item.Title</span>
+
+                        @if (!string.IsNullOrEmpty(item.Badge))
+                        {
+                            <span class="sidebar-badge">
+                                @item.Badge
+                            </span>
+                        }
+
+                    </a>
+                }
+
+            </div>
+        }
+
+    </nav>
+
+</aside>

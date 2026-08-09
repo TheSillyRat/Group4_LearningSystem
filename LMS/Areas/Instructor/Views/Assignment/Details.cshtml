@@ -1,0 +1,62 @@
+﻿@model LMS.Models.Assignment
+
+<div class="container-fluid">
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <h3 class="card-title text-primary">@Model.AssignmentTitle</h3>
+            <p class="text-muted">Due: @Model.DueDate.ToString("yyyy-MM-dd HH:mm") | Course: @Model.CourseId</p>
+            <p>@Model.Description</p>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Student Submissions</h4>
+    <div class="row">
+        @if (Model.Submissions != null && Model.Submissions.Any())
+        {
+            @foreach (var sub in Model.Submissions)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card border-info">
+                        <div class="card-header bg-info text-white d-flex justify-content-between">
+                            <span>Student ID: @sub.StudentId</span>
+                            <span>Submitted: @sub.SubmitDate.ToString("yyyy-MM-dd HH:mm")</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>File:</strong> <a href="@sub.FilePath" target="_blank">Download Work</a></p>
+
+                            <form asp-area="Instructor" asp-controller="Assignment" asp-action="Grade" method="post">
+                                <input type="hidden" name="submissionId" value="@sub.SubmissionId" />
+                                <input type="hidden" name="assignmentId" value="@Model.AssignmentId" />
+
+                                <div class="row mb-2">
+                                    <div class="col-4">
+                                        <label class="fw-bold">Score:</label>
+                                        <input type="number" step="0.1" name="score" class="form-control" value="@sub.Score" required />
+                                    </div>
+                                    <div class="col-8">
+                                        <label class="fw-bold">Feedback:</label>
+                                        <input type="text" name="feedback" class="form-control" value="@sub.Feedback" required />
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary w-100">Submit Grade</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning">No submissions yet.</div>
+        }
+    </div>
+</div>

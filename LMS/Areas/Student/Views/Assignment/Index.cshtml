@@ -1,0 +1,23 @@
+﻿@model IEnumerable<LMS.Models.Assignment>
+
+<div class="container-fluid">
+    <h2 class="mb-4">My Assignments</h2>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-4 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@item.AssignmentTitle</h5>
+                        <h6 class="card-subtitle mb-2 text-danger">Due: @item.DueDate.ToString("yyyy-MM-dd HH:mm")</h6>
+                        <p class="card-text text-truncate">@item.Description</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <a href="/Student/Assignment/Details/@item.AssignmentId" class="btn btn-outline-primary w-100">View Details & Submit</a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

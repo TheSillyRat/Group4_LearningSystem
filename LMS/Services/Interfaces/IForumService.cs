@@ -1,4 +1,4 @@
-﻿namespace LMS.Services
+﻿namespace LMS.Services.Interfaces
 {
     public interface IForumService
     {
