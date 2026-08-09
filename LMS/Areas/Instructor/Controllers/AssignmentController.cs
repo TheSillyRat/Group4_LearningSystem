@@ -1,4 +1,4 @@
-﻿using LMS.Models;
+using LMS.Models;
 using LMS.Repositories.Interfaces;
 using LMS.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;

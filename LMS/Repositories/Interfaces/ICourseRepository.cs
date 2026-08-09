@@ -1,8 +1,8 @@
 using LMS.Models;
 
-namespace LMS.Services.Interfaces
+namespace LMS.Repositories.Interfaces
 {
-    public interface ICourseService
+    public interface ICourseRepository
     {
         Task<IEnumerable<Course>> GetAllCoursesAsync();
         Task<Course?> GetCourseByIdAsync(int courseId);
