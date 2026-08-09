@@ -1,0 +1,111 @@
+@model LMS.Models.Course
+
+@{
+    ViewData["Title"] = "Course Details";
+}
+
+<div class="container mt-4">
+    <div class="card p-3 mb-4 bg-light">
+        <h2>📖 @Model.CourseName</h2>
+        <p><strong>Description:</strong> @Model.Description</p>
+        <div>
+            <a asp-action="Index" class="btn btn-secondary btn-sm">⬅️ Back to List</a>
+        </div>
+    </div>
+
+    <!-- 1. QUẢN LÝ CÁC MODULE VÀ CONTENT -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3>📌 List of Modules</h3>
+        <a asp-controller="Module" asp-action="Create" asp-route-courseId="@Model.CourseId" class="btn btn-primary btn-sm">+ Add New Module</a>
+    </div>
+
+    @if (Model.Modules != null && Model.Modules.Any())
+    {
+        @foreach (var module in Model.Modules.OrderBy(m => m.DisplayOrder))
+        {
+            <div class="card mb-3 border-primary">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Module @module.DisplayOrder: @module.ModuleName</h5>
+                    <div>
+                        <a asp-controller="Content" asp-action="Create" asp-route-moduleId="@module.ModuleId" class="btn btn-light btn-sm">+ Add Content</a>
+                        <a asp-controller="Module" asp-action="Edit" asp-route-id="@module.ModuleId" class="btn btn-warning btn-sm">Edit</a>
+                        <a asp-controller="Module" asp-action="Delete" asp-route-id="@module.ModuleId" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this module?')">Delete</a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">@module.Description</p>
+
+                    <h6>📄 List of Contents:</h6>
+                    @if (module.Contents != null && module.Contents.Any())
+                    {
+                        <ul class="list-group">
+                            @foreach (var content in module.Contents)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-secondary">@content.ContentType</span>
+                                        <strong>@content.Title</strong> - <small class="text-muted">@content.Description</small>
+                                        @if (!string.IsNullOrEmpty(content.FileUrl))
+                                        {
+                                            <a href="@content.FileUrl" target="_blank" class="ms-2 text-decoration-none">📥 View/Download File</a>
+                                        }
+                                    </div>
+                                    <a asp-controller="Content" asp-action="Delete" asp-route-id="@content.ContentId" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to delete this content?')">Delete</a>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p class="text-muted italic small">No lessons or learning materials are available in this section yet.</p>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-info">No modules have been created yet.</div>
+    }
+
+    <hr class="my-4" />
+
+    <!-- 2. QUẢN LÝ QUIZ (BÀI KIỂM TRA) -->
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h3>📝 List of Quizzes</h3>
+        <a asp-controller="Quiz" asp-action="Create" asp-route-courseId="@Model.CourseId" class="btn btn-warning btn-sm">+ Create New Quiz</a>
+    </div>
+
+    @if (Model.Quizzes != null && Model.Quizzes.Any())
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Quiz Title</th>
+                    <th>Duration</th>
+                    <th>Open Date</th>
+                    <th>Close Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var quiz in Model.Quizzes)
+                {
+                    <tr>
+                        <td>@quiz.QuizTitle</td>
+                        <td>@quiz.Duration minutes</td>
+                        <td>@quiz.OpenDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@quiz.CloseDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <a asp-controller="Quiz" asp-action="Delete" asp-route-id="@quiz.QuizId" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this quiz?')">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning">No quizzes available for this course.</div>
+    }
+</div>
