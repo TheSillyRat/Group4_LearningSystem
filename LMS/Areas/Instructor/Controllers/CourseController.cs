@@ -1,10 +1,11 @@
 ﻿using System.Data;
+using LMS.Data;
+using LMS.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Areas.Instructor.Controllers
 {
-    public class CourseController : Controller
-    {
         [Area("Instructor")]
         public class CourseController : Controller
         {
@@ -25,10 +26,10 @@ namespace LMS.Areas.Instructor.Controllers
             public async Task<IActionResult> Details(int? id)
             {
                 if (id == null) return NotFound();
-                
-                var course = await _context.Course.Include(c => c.Modules).ThenInclude(m => m.Content).Include(c => c.Quiz).FirstOrDefaultAsync(m => m.Id == id);
+
+                var course = await _context.Course.Include(c => c.Modules!).ThenInclude(m => m.Contents).Include(c => c.Quizzes).FirstOrDefaultAsync(m => m.CourseId == id);
                 if (course == null) return NotFound();
-                
+
                 return View(course);
             }
 
@@ -68,16 +69,16 @@ namespace LMS.Areas.Instructor.Controllers
             [ValidateAntiForgeryToken]
             public async Task<IActionResult> Edit(int id, Course course)
             {
-                if (id != course.Id) return NotFound();
+                if (id != course.CourseId) return NotFound();
 
                 if (ModelState.IsValid)
                 {
-                    try 
+                    try
                     {
                         _context.Update(course);
                         await _context.SaveChangesAsync();
                     }
-                    catch(DbUpdateConcurrencyException)
+                    catch (DbUpdateConcurrencyException)
                     {
                         if (!_context.Course.Any(e => e.CourseId == course.CourseId))
                             return NotFound();
@@ -105,11 +106,11 @@ namespace LMS.Areas.Instructor.Controllers
             {
                 var course = await _context.Course.FindAsync(id);
                 if (course != null)
-                {   
+                {
                     _context.Course.Remove(course);
                     await _context.SaveChangesAsync();
-                } 
+                }
                 return RedirectToAction(nameof(Index));
             }
         }
-    }
+}
