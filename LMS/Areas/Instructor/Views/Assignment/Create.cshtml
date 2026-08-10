@@ -1,196 +1,96 @@
-﻿@{
+﻿@model LMS.Models.Assignment
+
+@{
     ViewData["Title"] = "Create Assignment";
 }
 
 <div class="assignment-page">
-
     <div class="assignment-card">
 
-        <!-- Header -->
         <div class="assignment-header">
             <h1>Create Assignment</h1>
             <p>Create a new assignment for your course</p>
         </div>
 
-        <form asp-action="Create"
-              asp-controller="Assignment"
-              method="post"
-              enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger fw-bold mb-3"></div>
-            <!-- Title + Course -->
+        <form asp-action="Create" asp-controller="Assignment" method="post" enctype="multipart/form-data">
+            
+            <div asp-validation-summary="ModelOnly" class="text-danger fw-bold mb-3"></div>
+
             <div class="form-row">
-
                 <div class="form-group">
-                    <label for="AssignmentTitle">Assignment Title</label>
-                    <input type="text"
-                           id="AssignmentTitle"
-                           name="AssignmentTitle"
-                           class="form-control"
-                           placeholder="Enter assignment title" />
+                    <label asp-for="AssignmentTitle">Assignment Title</label>
+                    <input asp-for="AssignmentTitle" class="form-control" placeholder="Enter assignment title" />
+                    <span asp-validation-for="AssignmentTitle" class="text-danger"></span>
                 </div>
 
                 <div class="form-group">
-                    <label for="CourseId">Course</label>
-
-                    <select id="CourseId"
-                            name="CourseId"
-                            class="form-control">
-
+                    <label asp-for="CourseId">Course</label>
+                    <select asp-for="CourseId" class="form-control">
                         <option value="">Select course</option>
-
-                        <!-- Demo data - will be replaced by Model later -->
-                        <option value="1">
-                            Introduction to Programming
-                        </option>
-
-                        <option value="2">
-                            Database Management
-                        </option>
-
+                        <option value="1">Introduction to Programming</option>
+                        <option value="2">Database Management</option>
                     </select>
+                    <span asp-validation-for="CourseId" class="text-danger"></span>
                 </div>
-
             </div>
 
-
-            <!-- Module + Due Date -->
             <div class="form-row">
-
                 <div class="form-group">
                     <label for="ModuleId">Module / Section</label>
-
-                    <select id="ModuleId"
-                            name="ModuleId"
-                            class="form-control">
-
+                    <select id="ModuleId" name="ModuleId" class="form-control">
                         <option value="">Select module</option>
-
-                        <!-- Demo data -->
-                        <option value="1">
-                            Module 1 - Introduction
-                        </option>
-
-                        <option value="2">
-                            Module 2 - Basic Concepts
-                        </option>
-
+                        <option value="1">Module 1 - Introduction</option>
+                        <option value="2">Module 2 - Basic Concepts</option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="DueDate">Due Date</label>
-
-                    <input type="datetime-local"
-                           id="DueDate"
-                           name="DueDate"
-                           class="form-control" />
+                    <label asp-for="DueDate">Due Date</label>
+                    <input asp-for="DueDate" type="datetime-local" class="form-control" />
+                    <span asp-validation-for="DueDate" class="text-danger"></span>
                 </div>
-
             </div>
 
-
-            <!-- Description -->
             <div class="form-group full-width">
-
-                <label for="Description">
-                    Description / Instructions
-                </label>
-
-                <textarea id="Description"
-                          name="Description"
-                          class="form-control assignment-description"
-                          placeholder="Write instructions for students..."></textarea>
-
+                <label asp-for="Description">Description / Instructions</label>
+                <textarea asp-for="Description" class="form-control assignment-description" placeholder="Write instructions for students..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
             </div>
 
-
-            <!-- Maximum Score + Attachment -->
             <div class="form-row">
-
                 <div class="form-group">
-
-                    <label for="MaxScore">
-                        Maximum Score
-                    </label>
-
-                    <input type="number"
-                           id="MaxScore"
-                           name="MaxScore"
-                           class="form-control"
-                           value="100"
-                           min="0" />
-
+                    <label for="MaxScore">Maximum Score</label>
+                    <input type="number" id="MaxScore" name="MaxScore" class="form-control" value="100" min="0" />
                 </div>
 
-
                 <div class="form-group">
-
-                    <label for="Attachment">
-                        Attachment
-                    </label>
-
+                    <label for="Attachment">Attachment</label>
                     <div class="file-upload">
-
-                        <label for="Attachment"
-                               class="file-upload-button">
-
-                            <i class="bi bi-paperclip"></i>
-                            Add File
-
+                        <label for="Attachment" class="file-upload-button">
+                            <i class="bi bi-paperclip"></i> Add File
                         </label>
-
-                        <input type="file"
-                               id="Attachment"
-                               name="Attachment"
-                               hidden />
-
+                        <input type="file" id="Attachment" name="Attachment" hidden />
                     </div>
-
                 </div>
-
             </div>
 
-
-            <!-- Options -->
             <div class="form-group options-group">
-
                 <label>Options</label>
-
                 <div class="assignment-options">
-
                     <label class="checkbox-option">
-
-                        <input type="checkbox"
-                               name="PublishImmediately"
-                               value="true" />
-
+                        <input type="checkbox" name="PublishImmediately" value="true" />
                         <span>Publish immediately</span>
-
                     </label>
-
                 </div>
-
             </div>
 
+            <input type="hidden" asp-for="InstructorId" value="1" />
 
-            <!-- Buttons -->
-            <input type="hidden" name="InstructorId" value="1" />
             <div class="form-actions">
-
-                <button type="submit"
-                        class="btn-create">
-                    Create Assignment
-                </button>
-
-                <a asp-action="Index"
-                   class="btn-cancel">
-                    Cancel
-                </a>
-
+                <button type="submit" class="btn-create">Create Assignment</button>
+                <a asp-action="Index" class="btn-cancel">Cancel</a>
             </div>
 
         </form>
-
     </div>
-
 </div>
