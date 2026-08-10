@@ -34,13 +34,16 @@ namespace LMS.Areas.Instructor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Assignment assignment)
         {
+            ModelState.Remove("Course");
+            ModelState.Remove("Instructor");
+            ModelState.Remove("Submissions");
             if (!ModelState.IsValid)
             {
                 return View(assignment);
             }
 
             await _assignmentRepository.AddAssignmentAsync(assignment);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = assignment.AssignmentId });
         }
 
         [HttpGet]

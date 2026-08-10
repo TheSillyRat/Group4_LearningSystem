@@ -67,40 +67,41 @@ namespace LMS.Services.Layout
                 AvatarUrl = "/images/default-avatar.png",
 
                 Items = new List<SidebarItemViewModel>
+{
+                Item("Dashboard", "bi-speedometer2", "/Instructor/Dashboard"),
+
+                Parent("Courses", "bi-book", new List<SidebarItemViewModel>
                 {
-                    Item("Dashboard", "bi-speedometer2", "/Instructor/Dashboard"),
+                    Item("My Courses", null, "/Instructor/Course"),
+                    Item("Create Course", null, "/Instructor/Course/Create"),
+                    Item("Course Content", null, "/Instructor/Content")
+                }),
 
-                    Parent("Courses", "bi-book", new List<SidebarItemViewModel>
-                    {
-                        Item("My Courses", null, "/Instructor/Courses"),
-                        Item("Create Course", null, "/Instructor/Courses/Create"),
-                        Item("Course Content", null, "/Instructor/Courses/Content")
-                    }),
+                Parent("Students", "bi-people", new List<SidebarItemViewModel>
+                {
+                    Item("Enrollments", null, "#"),
+                    Item("Attendance", null, "#"),
+                    Item("Progress", null, "#")
+                }),
 
-                    Parent("Students", "bi-people", new List<SidebarItemViewModel>
-                    {
-                        Item("Enrollments", null, "/Instructor/Students/Enrollments"),
-                        Item("Attendance", null, "/Instructor/Students/Attendance"),
-                        Item("Progress", null, "/Instructor/Students/Progress")
-                    }),
+                Parent("Assignments", "bi-file-earmark-text", new List<SidebarItemViewModel>
+                {
+                    Item("Manage Assignments", null, "/Instructor/Assignment"),
+                    Item("Create Assignment", null, "/Instructor/Assignment/Create"),
+                    Item("Submissions", null, "#")
+                }),
 
-                    Parent("Assignments", "bi-file-earmark-text", new List<SidebarItemViewModel>
-                    {
-                        Item("Manage Assignments", null, "/Instructor/Assignments"),
-                        Item("Submissions", null, "/Instructor/Assignments/Submissions")
-                    }),
+                Parent("Assessments", "bi-patch-question", new List<SidebarItemViewModel>
+                {
+                    Item("Quizzes", null, "/Instructor/Quiz"),
+                    Item("Exams", null, "/Instructor/Assessment"),
+                    Item("Results / Grading", null, "#")
+                }),
 
-                    Parent("Assessments", "bi-patch-question", new List<SidebarItemViewModel>
-                    {
-                        Item("Quizzes", null, "/Instructor/Assessments/Quizzes"),
-                        Item("Exams", null, "/Instructor/Assessments/Exams"),
-                        Item("Results / Grading", null, "/Instructor/Assessments/Results")
-                    }),
+                Item("Discussion", "bi-chat-dots", "#"),
 
-                    Item("Discussion", "bi-chat-dots", "/Instructor/Discussion"),
-
-                    Item("Profile", "bi-person", "/Instructor/Profile")
-                }
+                Item("Profile", "bi-person", "#")
+            }
             };
         }
 
