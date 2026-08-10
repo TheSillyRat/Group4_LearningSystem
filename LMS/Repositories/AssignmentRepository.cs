@@ -16,7 +16,10 @@ namespace LMS.Repositories
 
         public async Task<IEnumerable<Assignment>> GetAllAssignmentsAsync()
         {
-            return await _context.Assignments.ToListAsync();
+            return await _context.Assignments
+                .Include(a => a.Course)      
+                .Include(a => a.Instructor)  
+                .ToListAsync();
         }
 
         public async Task<Assignment?> GetAssignmentByIdAsync(int id)

@@ -16,16 +16,15 @@
               asp-controller="Assignment"
               method="post"
               enctype="multipart/form-data">
-
+            <div asp-validation-summary="All" class="text-danger fw-bold mb-3"></div>
             <!-- Title + Course -->
             <div class="form-row">
 
                 <div class="form-group">
-                    <label for="Title">Assignment Title</label>
-
+                    <label for="AssignmentTitle">Assignment Title</label>
                     <input type="text"
-                           id="Title"
-                           name="Title"
+                           id="AssignmentTitle"
+                           name="AssignmentTitle"
                            class="form-control"
                            placeholder="Enter assignment title" />
                 </div>
@@ -175,6 +174,7 @@
 
 
             <!-- Buttons -->
+            <input type="hidden" name="InstructorId" value="1" />
             <div class="form-actions">
 
                 <button type="submit"

@@ -1,0 +1,42 @@
+@model LMS.Models.Quiz
+
+@{
+    ViewData["Title"] = "Create Quiz";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <h2>📝 Create Quiz</h2>
+    <hr />
+    <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="CourseId" value="@ViewBag.CourseId" />
+
+        <div class="mb-3">
+            <label class="form-label">Quiz Title (*)</label>
+            <input asp-for="QuizTitle" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description / Instructions</label>
+            <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Exam Duration (Minutes)</label>
+            <input asp-for="Duration" type="number" class="form-control" value="45" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Open Date</label>
+            <input asp-for="OpenDate" type="datetime-local" class="form-control" 
+                   value="@Model.OpenDate.ToString("yyyy-MM-ddTHH:mm")" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Close Date</label>
+            <input asp-for="CloseDate" type="datetime-local" class="form-control" 
+                   value="@Model.CloseDate.ToString("yyyy-MM-ddTHH:mm")" required />
+        </div>
+
+        <button type="submit" class="btn btn-warning">Create Quiz</button>
+    </form>
+</div>
