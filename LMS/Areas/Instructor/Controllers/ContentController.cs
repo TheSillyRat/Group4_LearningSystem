@@ -28,6 +28,14 @@ namespace LMS.Areas.Instructor.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Content content, IFormFile? fileUpload)
         {
+            ModelState.Remove("FileUrl");
+            ModelState.Remove("Module");
+
+            if ((fileUpload == null || fileUpload.Length == 0) && string.IsNullOrWhiteSpace(content.FileUrl))
+            {
+                ModelState.AddModelError("", "Please enter a URL or select a file to upload!");
+            }
+
             if (ModelState.IsValid)
             {
                 // Xử lý Upload File (PDF, Slide, docx...)
