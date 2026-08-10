@@ -52,5 +52,33 @@ namespace LMS.Services
             var enrollment = await _enrollmentRepository.GetEnrollmentAsync(studentId, courseId);
             return enrollment != null;
         }
+
+        public async Task<bool> MarkAttendanceAsync(int studentId, int courseId)
+        {
+            var enrollment = await _enrollmentRepository.GetEnrollmentAsync(studentId, courseId);
+            if (enrollment == null)
+                return false;
+
+            enrollment.Attendance = true;
+            await _enrollmentRepository.UpdateEnrollmentAsync(enrollment);
+            return true;
+        }
+
+        public async Task<bool> IncrementProgressAsync(int studentId, int courseId)
+        {
+            var enrollment = await _enrollmentRepository.GetEnrollmentAsync(studentId, courseId);
+            if (enrollment == null)
+                return false;
+
+            // Simplified simulation: Increase by 25% each time until 100%
+            enrollment.Progress = Math.Min(100, (enrollment.Progress ?? 0) + 25);
+            await _enrollmentRepository.UpdateEnrollmentAsync(enrollment);
+            return true;
+        }
+
+        public async Task<Enrollment?> GetEnrollmentAsync(int studentId, int courseId)
+        {
+            return await _enrollmentRepository.GetEnrollmentAsync(studentId, courseId);
+        }
     }
 }

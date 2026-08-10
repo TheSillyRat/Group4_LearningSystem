@@ -8,5 +8,8 @@ namespace LMS.Services.Interfaces
         Task<bool> CancelEnrollmentAsync(int studentId, int courseId);
         Task<bool> IsEnrolledAsync(int studentId, int courseId);
         Task<IEnumerable<Enrollment>> GetMyCoursesAsync(int studentId);
+        Task<bool> MarkAttendanceAsync(int studentId, int courseId);
+        Task<bool> IncrementProgressAsync(int studentId, int courseId);
+        Task<Enrollment?> GetEnrollmentAsync(int studentId, int courseId);
     }
 }

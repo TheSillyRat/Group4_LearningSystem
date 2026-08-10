@@ -51,5 +51,30 @@ namespace LMS.Areas.Student.Controllers
             }
             return RedirectToAction("Details", "Course", new { area = "Student", id = id });
         }
+        // POST: Student/Enrollment/MarkAttendance/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAttendance(int id)
+        {
+            var result = await _enrollmentService.MarkAttendanceAsync(_mockStudentId, id);
+            if (result)
+            {
+                TempData["Message"] = "Attendance marked successfully.";
+            }
+            return RedirectToAction("MyCourses");
+        }
+
+        // POST: Student/Enrollment/IncrementProgress/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> IncrementProgress(int id)
+        {
+            var result = await _enrollmentService.IncrementProgressAsync(_mockStudentId, id);
+            if (result)
+            {
+                TempData["Message"] = "Progress updated successfully.";
+            }
+            return RedirectToAction("Details", "Course", new { area = "Student", id = id });
+        }
     }
 }

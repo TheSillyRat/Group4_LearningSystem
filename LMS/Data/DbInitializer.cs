@@ -28,9 +28,10 @@ namespace LMS.Data
 
             var users = new User[]
             {
-                new User { FullName = "Nguyễn Văn Sang", Email = "vsang@gmail.com", Password = "123", RoleId = 3 },
-                new User { FullName = "Trần Hữu Sang", Email = "hsang@gmail.com", Password = "123", RoleId = 2 },
-                new User { FullName = "Lê Tuấn", Email = "tuan@gmail.com", Password = "123", RoleId = 1 }
+                new User { FullName = "Sang Hồ", Email = "student@gmail.com", Password = "123", RoleId = 3 },
+                new User { FullName = "Sang Huỳnh", Email = "instructor1@gmail.com", Password = "123", RoleId = 2 },
+                new User { FullName = "Phước Tường", Email = "instructor2@gmail.com", Password = "123", RoleId = 2 },
+                new User { FullName = "Tài Phan", Email = "admin@gmail.com", Password = "123", RoleId = 1 }
             };
             foreach (User u in users)
             {

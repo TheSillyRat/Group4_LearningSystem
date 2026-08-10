@@ -33,7 +33,9 @@ namespace LMS.Areas.Student.Controllers
                 return NotFound();
             }
 
-            ViewBag.IsEnrolled = await _enrollmentService.IsEnrolledAsync(_mockStudentId, id);
+            var enrollment = await _enrollmentService.GetEnrollmentAsync(_mockStudentId, id);
+            ViewBag.IsEnrolled = enrollment != null;
+            ViewBag.Progress = enrollment?.Progress ?? 0;
 
             return View(course);
         }

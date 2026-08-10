@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = Model.CourseName;
     bool isEnrolled = ViewBag.IsEnrolled ?? false;
+    double progress = ViewBag.Progress ?? 0;
 }
 
 <div class="container mt-4">
@@ -25,6 +26,16 @@
                 <p><strong>Prerequisite:</strong> @Model.Prerequisite</p>
             }
 
+            @if (isEnrolled)
+            {
+                <div class="mt-4">
+                    <h5>Your Progress</h5>
+                    <div class="progress mb-2" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @progress%;" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">@progress%</div>
+                    </div>
+                </div>
+            }
+
             <div class="mt-4">
                 <h4>Modules (@Model.Modules?.Count())</h4>
                 @if (Model.Modules != null && Model.Modules.Any())
@@ -32,7 +43,9 @@
                     <ul class="list-group list-group-flush">
                         @foreach (var module in Model.Modules)
                         {
-                            <li class="list-group-item">@module.ModuleName</li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @module.ModuleName
+                            </li>
                         }
                     </ul>
                 }
@@ -45,7 +58,19 @@
             <div class="mt-4 text-center">
                 @if (isEnrolled)
                 {
-                    <form asp-controller="Enrollment" asp-action="CancelEnrollment" method="post" class="d-inline">
+                    if (progress < 100)
+                    {
+                        <form asp-controller="Enrollment" asp-action="IncrementProgress" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.CourseId" />
+                            <button type="submit" class="btn btn-primary">Mark Next Module Complete</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success disabled" disabled>Course Completed 🎉</button>
+                    }
+                    
+                    <form asp-controller="Enrollment" asp-action="CancelEnrollment" method="post" class="d-inline ms-2">
                         <input type="hidden" name="id" value="@Model.CourseId" />
                         <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to cancel your enrollment?');">Cancel Enrollment</button>
                     </form>

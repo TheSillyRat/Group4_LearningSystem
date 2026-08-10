@@ -48,7 +48,11 @@
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary">Pending</span>
+                                    <span class="badge bg-secondary mb-1">Pending</span>
+                                    <form asp-controller="Enrollment" asp-action="MarkAttendance" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.CourseId" />
+                                        <button type="submit" class="btn btn-xs btn-outline-success" style="font-size: 0.75rem;">Check In</button>
+                                    </form>
                                 }
                             </td>
                             <td>
