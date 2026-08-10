@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using LMS.Models;
 
 
@@ -31,5 +31,40 @@ namespace LMS.Data
 
 
         public DbSet<ForumReply> ForumReplies { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Assignment>()
+                .HasOne(a => a.Instructor)
+                .WithMany(u => u.Assignments)
+                .HasForeignKey(a => a.InstructorId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Enrollment>()
+                .HasOne(e => e.Student)
+                .WithMany(u => u.Enrollments)
+                .HasForeignKey(e => e.StudentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ForumPost>()
+                .HasOne(fp => fp.User)
+                .WithMany(u => u.ForumPosts)
+                .HasForeignKey(fp => fp.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Submission>()
+                .HasOne(s => s.Student)
+                .WithMany()
+                .HasForeignKey(s => s.StudentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<ForumReply>()
+                .HasOne(fr => fr.User)
+                .WithMany(u => u.ForumReplies)
+                .HasForeignKey(fr => fr.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+        }
     }
 }
