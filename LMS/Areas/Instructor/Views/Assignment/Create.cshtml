@@ -38,43 +38,41 @@
 
                         <option value="">Select course</option>
 
-                        <!-- Demo data - will be replaced by Model later -->
+                        <!-- Demo data - matched with SQL records -->
                         <option value="1">
-                            Introduction to Programming
+                            Basic C# Programming
                         </option>
 
                         <option value="2">
-                            Database Management
+                            Advanced ASP.NET Core MVC
                         </option>
 
                     </select>
                 </div>
 
-            </div>
+                <!-- Module + Due Date -->
+                <div class="form-row">
 
+                    <div class="form-group">
+                        <label for="ModuleId">Module / Section</label>
 
-            <!-- Module + Due Date -->
-            <div class="form-row">
+                        <select id="ModuleId"
+                                name="ModuleId"
+                                class="form-control">
 
-                <div class="form-group">
-                    <label for="ModuleId">Module / Section</label>
+                            <option value="">Select module</option>
 
-                    <select id="ModuleId"
-                            name="ModuleId"
-                            class="form-control">
+                            <!-- Demo data - matched with SQL records -->
+                            <option value="1">
+                                Chapter 1: Variables and Loops
+                            </option>
 
-                        <option value="">Select module</option>
+                            <option value="2">
+                                Chapter 1: MVC Architecture
+                            </option>
 
-                        <!-- Demo data -->
-                        <option value="1">
-                            Module 1 - Introduction
-                        </option>
-
-                        <option value="2">
-                            Module 2 - Basic Concepts
-                        </option>
-
-                    </select>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="form-group">
