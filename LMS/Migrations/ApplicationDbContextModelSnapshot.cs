@@ -368,8 +368,19 @@ namespace LMS.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("ResetCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime?>("ResetCodeExpiry")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("SecurityPassword")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("UserId");
 
@@ -383,13 +394,13 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Course", "Course")
                         .WithMany("Assignments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("LMS.Models.User", "Instructor")
                         .WithMany("Assignments")
                         .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -402,7 +413,7 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Module", "Module")
                         .WithMany("Contents")
                         .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Module");
@@ -413,7 +424,7 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.User", "Instructor")
                         .WithMany("Courses")
                         .HasForeignKey("InstructorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Instructor");
@@ -424,13 +435,13 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Course", "Course")
                         .WithMany("Enrollments")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LMS.Models.User", "Student")
                         .WithMany("Enrollments")
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -443,13 +454,13 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Course", "Course")
                         .WithMany("ForumPosts")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LMS.Models.User", "User")
                         .WithMany("ForumPosts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -462,13 +473,13 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.ForumPost", "ForumPost")
                         .WithMany("Replies")
                         .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LMS.Models.User", "User")
                         .WithMany("ForumReplies")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("ForumPost");
@@ -481,7 +492,7 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Course", "Course")
                         .WithMany("Modules")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -492,7 +503,7 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Course", "Course")
                         .WithMany("Quizzes")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -503,13 +514,13 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Assignment", "Assignment")
                         .WithMany("Submissions")
                         .HasForeignKey("AssignmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("LMS.Models.User", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Assignment");
@@ -522,7 +533,7 @@ namespace LMS.Migrations
                     b.HasOne("LMS.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");

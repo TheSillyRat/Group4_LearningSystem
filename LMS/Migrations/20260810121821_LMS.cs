@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMS.Migrations
 {
     /// <inheritdoc />
-    public partial class LMS : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,6 +33,9 @@ namespace LMS.Migrations
                     FullName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Password = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: false),
+                    SecurityPassword = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    ResetCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: true),
+                    ResetCodeExpiry = table.Column<DateTime>(type: "datetime2", nullable: true),
                     RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -43,7 +46,7 @@ namespace LMS.Migrations
                         column: x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "RoleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -66,7 +69,7 @@ namespace LMS.Migrations
                         column: x => x.InstructorId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,8 +91,7 @@ namespace LMS.Migrations
                         name: "FK_Assignment_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CourseId");
                     table.ForeignKey(
                         name: "FK_Assignment_Users_InstructorId",
                         column: x => x.InstructorId,
@@ -118,7 +120,7 @@ namespace LMS.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Enrollment_Users_StudentId",
                         column: x => x.StudentId,
@@ -147,7 +149,7 @@ namespace LMS.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ForumPost_Users_UserId",
                         column: x => x.UserId,
@@ -175,7 +177,7 @@ namespace LMS.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -199,7 +201,7 @@ namespace LMS.Migrations
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "CourseId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -223,7 +225,7 @@ namespace LMS.Migrations
                         column: x => x.AssignmentId,
                         principalTable: "Assignment",
                         principalColumn: "AssignmentId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Submission_Users_StudentId",
                         column: x => x.StudentId,
@@ -251,7 +253,7 @@ namespace LMS.Migrations
                         column: x => x.PostId,
                         principalTable: "ForumPost",
                         principalColumn: "PostId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ForumReplies_Users_UserId",
                         column: x => x.UserId,
@@ -281,7 +283,7 @@ namespace LMS.Migrations
                         column: x => x.ModuleId,
                         principalTable: "Module",
                         principalColumn: "ModuleId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
