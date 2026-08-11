@@ -93,7 +93,8 @@ namespace LMS.Migrations
                         name: "FK_Assignment_Users_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -121,7 +122,8 @@ namespace LMS.Migrations
                         name: "FK_Enrollment_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -149,7 +151,8 @@ namespace LMS.Migrations
                         name: "FK_ForumPost_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -224,7 +227,8 @@ namespace LMS.Migrations
                         name: "FK_Submission_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -251,7 +255,8 @@ namespace LMS.Migrations
                         name: "FK_ForumReplies_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-                        principalColumn: "UserId");
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(

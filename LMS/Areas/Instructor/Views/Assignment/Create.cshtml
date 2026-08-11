@@ -24,11 +24,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label asp-for="CourseId">Course</label>
-                    <select asp-for="CourseId" class="form-control">
+                    <label for="CourseId">Course</label>
+
+                    <select id="CourseId"
+                            name="CourseId"
+                            class="form-control"
+                            required>
+
                         <option value="">Select course</option>
-                        <option value="1">Introduction to Programming</option>
-                        <option value="2">Database Management</option>
+
+                        @if (ViewBag.Courses != null)
+                        {
+                            foreach (var course in (IEnumerable<LMS.Models.Course>)ViewBag.Courses)
+                            {
+                                <option value="@course.CourseId">@course.CourseName</option>
+                            }
+                        }
+
                     </select>
                     <span asp-validation-for="CourseId" class="text-danger"></span>
                 </div>
@@ -39,8 +51,15 @@
                     <label for="ModuleId">Module / Section</label>
                     <select id="ModuleId" name="ModuleId" class="form-control">
                         <option value="">Select module</option>
-                        <option value="1">Module 1 - Introduction</option>
-                        <option value="2">Module 2 - Basic Concepts</option>
+
+                        @if (ViewBag.Modules != null)
+                        {
+                            foreach (var module in (IEnumerable<LMS.Models.Module>)ViewBag.Modules)
+                            {
+                                <option value="@module.ModuleId">@module.ModuleName</option>
+                            }
+                        }
+
                     </select>
                 </div>
 
@@ -93,4 +112,36 @@
 
         </form>
     </div>
+<<<<<<< HEAD
 </div>
+=======
+
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('CourseId').addEventListener('change', function() {
+            var courseId = this.value;
+            var moduleSelect = document.getElementById('ModuleId');
+
+            // Xóa sạch các option Module hiện tại
+            moduleSelect.innerHTML = '<option value="">Select module</option>';
+
+            if (courseId) {
+                // Gọi API lấy danh sách Module thuộc Course được chọn
+                fetch('/Instructor/Assignment/GetModulesByCourse?courseId=' + courseId)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(item => {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.name;
+                            moduleSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Lỗi lấy danh sách Module:', error));
+            }
+        });
+    </script>
+}
+>>>>>>> 60538a50e6fe3b13b6999e62137226ac67d342e8
