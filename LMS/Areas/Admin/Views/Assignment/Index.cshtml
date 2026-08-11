@@ -1,0 +1,37 @@
+@model IEnumerable<LMS.Models.Assignment>
+
+@{
+    ViewData["Title"] = "Assignment Management (Admin)";
+}
+
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="bi bi-file-earmark-text text-primary me-2"></i>Assignment Management Systems (Admin)</h2>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="ps-3">ID</th>
+                        <th>Assignment Title</th>
+                        <th>Course (ID)</th>
+                        <th>Due Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-3 fw-bold">#@item.AssignmentId</td>
+                            <td class="fw-semibold text-primary">@item.AssignmentTitle</td>
+                            <td><span class="badge bg-secondary">Course #@item.CourseId</span></td>
+                            <td class="text-danger fw-medium">@item.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

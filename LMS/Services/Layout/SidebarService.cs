@@ -1,4 +1,4 @@
-﻿
+
 using LMS.ViewModels.Layout;
 
 namespace LMS.Services.Layout
@@ -20,10 +20,10 @@ namespace LMS.Services.Layout
         {
             return new SidebarViewModel
             {
-                DisplayName = "Student Demo",
-                Email = "student@gmail.com",
+                DisplayName = "",
+                Email = "",
                 RoleName = "Student",
-                AvatarUrl = "/images/default-avatar.png",
+                AvatarUrl = null,
 
                 Items = new List<SidebarItemViewModel>
                 {
@@ -61,10 +61,10 @@ namespace LMS.Services.Layout
         {
             return new SidebarViewModel
             {
-                DisplayName = "Instructor Demo",
-                Email = "instructor@gmail.com",
+                DisplayName = "",
+                Email = "",
                 RoleName = "Instructor",
-                AvatarUrl = "/images/default-avatar.png",
+                AvatarUrl = null,
 
                 Items = new List<SidebarItemViewModel>
 {
@@ -109,22 +109,22 @@ namespace LMS.Services.Layout
         {
             return new SidebarViewModel
             {
-                DisplayName = "Admin Demo",
-                Email = "admin@gmail.com",
+                DisplayName = "",
+                Email = "",
                 RoleName = "Admin",
-                AvatarUrl = "/images/default-avatar.png",
+                AvatarUrl = null,
 
                 Items = new List<SidebarItemViewModel>
                 {
                     Item("Dashboard", "bi-speedometer2", "/Admin/Dashboard"),
 
-                    Item("Users", "bi-people", "/Admin/Users"),
+                    Item("Users", "bi-people", "/Admin/User"),
 
-                    Item("Courses", "bi-book", "/Admin/Courses"),
+                    Item("Courses", "bi-book", "/Admin/Course"),
 
-                    Item("Enrollments", "bi-person-check", "/Admin/Enrollments"),
+                    Item("Enrollments", "bi-person-check", "/Admin/Enrollment"),
 
-                    Item("Profile", "bi-person", "/Admin/Profile")
+                    Item("Assignments", "bi-file-earmark-text", "/Admin/Assignment")
                 }
             };
         }

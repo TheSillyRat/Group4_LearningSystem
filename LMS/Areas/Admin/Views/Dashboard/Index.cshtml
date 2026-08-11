@@ -1,0 +1,324 @@
+@model IEnumerable<LMS.Models.User>
+
+@{
+    ViewData["Title"] = "Admin Overview Dashboard";
+    var recentCourses = ViewBag.RecentCourses as IEnumerable<LMS.Models.Course> ?? new List<LMS.Models.Course>();
+
+    int totalAdmins = ViewBag.TotalAdmins ?? 1;
+    int totalInstructors = ViewBag.TotalInstructors ?? 1;
+    int totalStudents = ViewBag.TotalStudents ?? 1;
+}
+
+<div class="container-fluid py-2">
+    <!-- Top Header Banner -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1 text-dark">
+                <i class="bi bi-speedometer2 text-primary me-2"></i>Admin Dashboard Overview
+            </h2>
+            <p class="text-secondary small mb-0">System performance metrics, analytics, and user activity insights.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a asp-controller="User" asp-action="Create" class="btn btn-primary rounded-3 px-3 py-2 fw-medium shadow-sm">
+                <i class="bi bi-person-plus me-1.5"></i>Add User
+            </a>
+            <a asp-controller="Course" asp-action="Create" class="btn btn-outline-primary rounded-3 px-3 py-2 fw-medium shadow-sm">
+                <i class="bi bi-journal-plus me-1.5"></i>Add Course
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Cards Row -->
+    <div class="row g-3 mb-4">
+        <!-- Total Users Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); color: #fff;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-white-50 small fw-bold text-uppercase tracking-wider">Total Users</div>
+                        <h2 class="fw-bold my-1 text-white">@ViewBag.TotalUsers</h2>
+                        <div class="d-flex gap-1 mt-2">
+                            <span class="badge bg-white bg-opacity-20 text-white font-monospace">@totalStudents Students</span>
+                            <span class="badge bg-white bg-opacity-20 text-white font-monospace">@totalInstructors Instructors</span>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 text-white fs-3">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Courses Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #059669 0%, #10b981 100%); color: #fff;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-white-50 small fw-bold text-uppercase tracking-wider">Active Courses</div>
+                        <h2 class="fw-bold my-1 text-white">@ViewBag.TotalCourses</h2>
+                        <div class="small text-white-50 mt-2">
+                            <i class="bi bi-graph-up-arrow me-1"></i>Curriculum Content Active
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 text-white fs-3">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Enrollments Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); color: #fff;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-white-50 small fw-bold text-uppercase tracking-wider">Total Enrollments</div>
+                        <h2 class="fw-bold my-1 text-white">@ViewBag.TotalEnrollments</h2>
+                        <div class="small text-white-50 mt-2">
+                            <i class="bi bi-check-circle me-1"></i>Student Subscriptions
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 text-white fs-3">
+                        <i class="bi bi-person-check-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Assignments Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #db2777 0%, #ec4899 100%); color: #fff;">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-white-50 small fw-bold text-uppercase tracking-wider">Assignments</div>
+                        <h2 class="fw-bold my-1 text-white">@ViewBag.TotalAssignments</h2>
+                        <div class="small text-white-50 mt-2">
+                            <i class="bi bi-file-earmark-check me-1"></i>Course Homework System
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white bg-opacity-10 rounded-3 text-white fs-3">
+                        <i class="bi bi-file-earmark-text-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row g-4 mb-4">
+        <!-- Enrollment Trend Line Chart -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-graph-up text-primary me-2"></i>Enrollment & Learning Activity Trend
+                        </h5>
+                        <p class="text-muted small mb-0">Monthly growth in student registrations & subscriptions</p>
+                    </div>
+                    <span class="badge bg-light text-secondary rounded-pill px-3 py-1 border">2026 Analytics</span>
+                </div>
+                <div class="card-body p-4">
+                    <div style="position: relative; height: 280px; width: 100%;">
+                        <canvas id="enrollmentTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Role Distribution Doughnut Chart -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-0 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-0">
+                            <i class="bi bi-pie-chart text-indigo me-2"></i>User Role Breakdown
+                        </h5>
+                        <p class="text-muted small mb-0">System user distribution by access role</p>
+                    </div>
+                </div>
+                <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                    <div style="position: relative; height: 260px; width: 100%;">
+                        <canvas id="roleDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Section -->
+    <div class="row g-4">
+        <!-- Recent Users Table -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-person-badge text-primary me-2"></i>Recent Registered Accounts
+                    </h5>
+                    <a asp-controller="User" asp-action="Index" class="btn btn-sm btn-link text-decoration-none fw-semibold">View All Users &rarr;</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-secondary">
+                                <tr>
+                                    <th class="ps-4">ID</th>
+                                    <th>Full Name</th>
+                                    <th>Email Address</th>
+                                    <th>Role</th>
+                                    <th class="text-end pe-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    var roleName = user.Role?.RoleName ?? "Student";
+                                    var badgeClass = roleName switch {
+                                        "Admin" => "bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25",
+                                        "Instructor" => "bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25",
+                                        _ => "bg-info bg-opacity-10 text-info border border-info border-opacity-25"
+                                    };
+
+                                    <tr>
+                                        <td class="ps-4 fw-bold text-secondary">#@user.UserId</td>
+                                        <td class="fw-semibold text-dark">@user.FullName</td>
+                                        <td class="text-muted small">@user.Email</td>
+                                        <td><span class="badge @badgeClass px-2.5 py-1 rounded-2">@roleName</span></td>
+                                        <td class="text-end pe-4">
+                                            <a asp-controller="User" asp-action="Edit" asp-route-id="@user.UserId" class="btn btn-sm btn-light rounded-2 border">
+                                                <i class="bi bi-pencil me-1"></i>Edit
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Latest Courses Table -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-white border-0 pt-4 px-4 pb-2 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold text-dark mb-0">
+                        <i class="bi bi-book text-success me-2"></i>Latest Added Courses
+                    </h5>
+                    <a asp-controller="Course" asp-action="Index" class="btn btn-sm btn-link text-decoration-none fw-semibold">View All &rarr;</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light text-secondary">
+                                <tr>
+                                    <th class="ps-4">Course Title</th>
+                                    <th>Instructor</th>
+                                    <th class="text-end pe-4">Enrolled</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var course in recentCourses)
+                                {
+                                    var count = course.Enrollments?.Count ?? 0;
+                                    <tr>
+                                        <td class="ps-4 fw-semibold text-primary">@course.CourseName</td>
+                                        <td class="text-muted small">@(course.Instructor?.FullName ?? "N/A")</td>
+                                        <td class="text-end pe-4"><span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">@count Students</span></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Chart 1: Enrollment Trend Line Chart
+            const ctxTrend = document.getElementById('enrollmentTrendChart').getContext('2d');
+            
+            const gradientBg = ctxTrend.createLinearGradient(0, 0, 0, 260);
+            gradientBg.addColorStop(0, 'rgba(99, 102, 241, 0.35)');
+            gradientBg.addColorStop(1, 'rgba(99, 102, 241, 0.0)');
+
+            new Chart(ctxTrend, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                    datasets: [{
+                        label: 'Course Enrollments',
+                        data: [4, 7, 12, 18, 25, 32, 40, @ViewBag.TotalEnrollments],
+                        borderColor: '#6366f1',
+                        borderWidth: 3,
+                        backgroundColor: gradientBg,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2.5,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 12 } }
+                        },
+                        y: {
+                            grid: { color: '#f1f5f9' },
+                            ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 12 }, precision: 0 }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: User Role Doughnut Chart
+            const ctxRole = document.getElementById('roleDistributionChart').getContext('2d');
+
+            new Chart(ctxRole, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Students', 'Instructors', 'Admins'],
+                    datasets: [{
+                        data: [@totalStudents, @totalInstructors, @totalAdmins],
+                        backgroundColor: ['#3b82f6', '#f59e0b', '#ef4444'],
+                        borderWidth: 0,
+                        hoverOffset: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#475569',
+                                font: { family: 'Plus Jakarta Sans', size: 13, weight: '600' },
+                                padding: 18,
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    },
+                    cutout: '72%'
+                }
+            });
+        });
+    </script>
+}

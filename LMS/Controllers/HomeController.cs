@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Controllers
 {
@@ -6,7 +7,19 @@ namespace LMS.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                var roleName = User.FindFirstValue(ClaimTypes.Role);
+                return roleName switch
+                {
+                    "Admin" => RedirectToAction("Index", "Dashboard", new { area = "Admin" }),
+                    "Instructor" => RedirectToAction("Index", "Assignment", new { area = "Instructor" }),
+                    "Student" => RedirectToAction("Index", "Assignment", new { area = "Student" }),
+                    _ => RedirectToAction("Login", "Account")
+                };
+            }
+
+            return RedirectToAction("Login", "Account");
         }
     }
 }

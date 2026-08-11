@@ -1,11 +1,13 @@
-﻿using LMS.Models;
+using LMS.Models;
 using LMS.Repositories.Interfaces;
 using LMS.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
+    [Authorize(Roles = "Instructor")]
     public class AssignmentController : Controller
     {
         private readonly IAssignmentService _assignmentService;
