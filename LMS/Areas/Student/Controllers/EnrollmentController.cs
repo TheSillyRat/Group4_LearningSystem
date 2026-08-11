@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace LMS.Areas.Student.Controllers
 {
+    [Area("Student")]
+    [Authorize(Roles = "Student")]
     public class EnrollmentController : Controller
     {
         public IActionResult Index()

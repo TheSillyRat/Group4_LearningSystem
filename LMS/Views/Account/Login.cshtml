@@ -1,0 +1,353 @@
+@model LMS.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LMS Learning System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 40%, #311042 100%);
+            --accent-glow: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+            --card-bg: rgba(255, 255, 255, 0.96);
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            --primary-accent: #6366f1;
+            --primary-hover: #4f46e5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glow Effect */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: var(--accent-glow);
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 430px;
+        }
+
+        .auth-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 28px;
+            box-shadow: var(--card-shadow);
+            padding: 2.75rem 2.25rem;
+            transition: transform 0.3s ease;
+        }
+
+        .auth-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .brand-logo-wrapper {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 2rem;
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.35);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-input {
+            border-radius: 14px;
+            border: 1.5px solid #cbd5e1;
+            padding-left: 2.75rem;
+            padding-right: 1rem;
+            height: 3.1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #0f172a;
+            background-color: #ffffff !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .custom-input:focus {
+            background-color: #ffffff !important;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+            outline: none;
+        }
+
+        /* Validation Error State */
+        .custom-input.input-validation-error,
+        .input-validation-error {
+            border-color: #ef4444 !important;
+            background-color: #fff5f5 !important;
+        }
+
+        .custom-input.input-validation-error:focus {
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.15) !important;
+        }
+
+        .validation-error-msg {
+            color: #dc2626;
+            font-size: 0.825rem;
+            font-weight: 600;
+            margin-top: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Compact Error Banner */
+        .auth-error-banner {
+            background: rgba(239, 68, 68, 0.08);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            border-radius: 14px;
+            padding: 0.65rem 1rem;
+            font-size: 0.875rem;
+            color: #dc2626;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .auth-error-banner ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .auth-error-banner li {
+            margin: 0;
+            padding: 0;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            color: #94a3b8;
+            font-size: 1.15rem;
+            pointer-events: none;
+            transition: color 0.2s ease;
+        }
+
+        .input-wrapper:focus-within .input-icon {
+            color: var(--primary-accent);
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            padding: 0.4rem;
+            font-size: 1.15rem;
+            border-radius: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--primary-accent);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            padding: 0.85rem;
+            border-radius: 14px;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            color: white;
+            box-shadow: 0 12px 28px rgba(99, 102, 241, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-accent);
+            border-color: var(--primary-accent);
+        }
+
+        .link-accent {
+            color: var(--primary-accent);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .link-accent:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Header Logo -->
+            <div class="text-center mb-4">
+                <div class="brand-logo-wrapper">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <h3 class="fw-extrabold text-dark mb-1">Welcome Back</h3>
+                <p class="text-secondary small fw-medium">Sign in to your LMS account</p>
+            </div>
+
+            <!-- Flash Success Alerts -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show rounded-3 small mb-4 border-0 shadow-sm" role="alert">
+                    <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Sleek Compact Error Banner -->
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[string.Empty]?.Errors.Count > 0)
+            {
+                <div class="auth-error-banner mb-4">
+                    <i class="bi bi-exclamation-circle-fill flex-shrink-0 fs-6 text-danger"></i>
+                    <div>
+                        @Html.ValidationSummary(true, "", new { @class = "mb-0" })
+                    </div>
+                </div>
+            }
+
+            <!-- Form (novalidate stops browser default HTML5 popup validation) -->
+            <form asp-action="Login" method="post" novalidate>
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
+                <!-- Email Input -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label text-dark fw-semibold small mb-1.5">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-envelope input-icon"></i>
+                        <input asp-for="Email" class="form-control custom-input" placeholder="Enter your email address" autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="validation-error-msg"></span>
+                </div>
+
+                <!-- Password Input -->
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label text-dark fw-semibold small mb-1.5">Password</label>
+                    <div class="input-wrapper">
+                        <i class="bi bi-lock input-icon"></i>
+                        <input asp-for="Password" id="passwordInput" class="form-control custom-input pe-5" placeholder="Enter your password" autocomplete="current-password" />
+                        <button type="button" class="password-toggle-btn" id="togglePasswordBtn" title="Toggle password visibility">
+                            <i class="bi bi-eye" id="passwordToggleIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="validation-error-msg"></span>
+                </div>
+
+                <!-- Remember Me & Forgot Password -->
+                <div class="d-flex justify-content-between align-items-center mb-4 pt-1">
+                    <div class="form-check">
+                        <input asp-for="RememberMe" class="form-check-input" id="rememberMeCheck" />
+                        <label asp-for="RememberMe" class="form-check-label text-secondary small fw-medium" for="rememberMeCheck">Remember me</label>
+                    </div>
+                    <a asp-action="ForgotPassword" class="link-accent small">Forgot Password?</a>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-gradient w-100 mb-3">
+                    <span>Sign In</span>
+                    <i class="bi bi-arrow-right fs-5"></i>
+                </button>
+            </form>
+
+            <!-- Footer Link -->
+            <div class="text-center mt-3">
+                <span class="text-secondary small fw-medium">Don't have an account? </span>
+                <a asp-action="Register" class="link-accent">Create an Account</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleBtn = document.getElementById('togglePasswordBtn');
+            const toggleIcon = document.getElementById('passwordToggleIcon');
+
+            if (toggleBtn && passwordInput && toggleIcon) {
+                toggleBtn.addEventListener('click', function () {
+                    const isPassword = passwordInput.getAttribute('type') === 'password';
+                    passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+                    toggleIcon.classList.toggle('bi-eye', !isPassword);
+                    toggleIcon.classList.toggle('bi-eye-slash', isPassword);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
