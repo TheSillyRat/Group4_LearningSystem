@@ -1,34 +1,90 @@
 ﻿@model IEnumerable<LMS.Models.Assignment>
 
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Assignment Management</h2>
-        <a href="/Instructor/Assignment/Create" class="btn btn-primary">Create New Assignment</a>
-    </div>
+<style>
+    .lms-dashboard {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
 
-    <table class="table table-bordered table-hover bg-white">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Course ID</th>
-                <th>Due Date</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>@item.AssignmentId</td>
-                    <td>@item.AssignmentTitle</td>
-                    <td>@item.CourseId</td>
-                    <td>@item.DueDate.ToString("yyyy-MM-dd HH:mm")</td>
-                    <td>
-                        <a href="/Instructor/Assignment/Details/@item.AssignmentId" class="btn btn-sm btn-info text-white">View & Grade</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    .hero-banner {
+        background: linear-gradient(135deg, #8e9eab 0%, #eef2f3 100%);
+        background-color: #92a8d1;
+    }
+
+    .assignment-list-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background-color: #ffffff;
+    }
+
+    .assignment-list-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+        background-color: #fcfcfc;
+    }
+
+    .icon-box {
+        width: 48px;
+        height: 48px;
+        background-color: #f1f3f5;
+    }
+</style>
+
+<div class="container-fluid py-4 lms-dashboard">
+    <div class="row">
+        <div class="col-lg-8">
+
+            <div class="hero-banner p-4 rounded-4 shadow-sm mb-4 text-dark position-relative overflow-hidden">
+                <div class="w-75 position-relative" style="z-index: 2;">
+                    <h3 class="fw-bold mb-2">LMS</h3>
+                    <p class="mb-4 text-muted">You can create courses, upload material and create assessments</p>
+                    <a href="/Instructor/Assignment/Create" class="btn btn-primary rounded-pill px-5 py-2 fw-medium" style="background-color: #7b61ff; border: none;">
+                        Create
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="fw-bold mb-0">Your assignments</h5>
+                    <a href="#" class="text-decoration-none text-muted small">Show all ></a>
+                </div>
+
+                <div class="assignment-container">
+                    @foreach (var item in Model)
+                    {
+                        <a href="/Instructor/Assignment/Details/@item.AssignmentId" class="text-decoration-none text-dark">
+                            <div class="assignment-list-card d-flex justify-content-between align-items-center p-3 mb-3 rounded-4 shadow-sm border border-light">
+
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-box rounded-circle d-flex justify-content-center align-items-center me-3 fs-5">
+                                        
+                                    </div>
+                                    <div>
+                                        <h6 class="fw-bold mb-1">@item.AssignmentTitle</h6>
+                                        <small class="text-muted">@item.DueDate.ToString("dd MMM yyyy")</small>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    @if (item.DueDate >= DateTime.Now)
+                                    {
+                                        <span class="badge rounded-pill px-3 py-2 fw-normal" style="background-color: #fff3cd; color: #856404;">
+                                            In progress
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge rounded-pill px-3 py-2 fw-normal" style="background-color: #d4edda; color: #155724;">
+                                            Completed
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
 </div>

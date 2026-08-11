@@ -1,23 +1,227 @@
 ﻿@model IEnumerable<LMS.Models.Assignment>
 
-<div class="container-fluid">
-    <h2 class="mb-4">My Assignments</h2>
+<style>
+    .student-dashboard {
+        background-color: #f4f6f8;
+        min-height: 100vh;
+        padding: 2rem 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
+    .main-board {
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 24px 32px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .table-assignments {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .table-assignments th {
+        color: #718096;
+        font-weight: 500;
+        font-size: 0.9rem;
+        padding-bottom: 16px;
+        border-bottom: 1px solid #edf2f7;
+        text-align: left;
+    }
+
+    .table-assignments td {
+        padding: 20px 0;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    .table-assignments tr:last-child td {
+        border-bottom: none;
+    }
+
+    .course-title {
+        font-weight: 600;
+        color: #2d3748;
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .instructor-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: #4a5568;
+        font-size: 0.95rem;
+    }
+
+    .avatar-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .due-date-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .due-date-text {
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+    }
+
+    .countdown-text {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-normal {
+        color: #4a5568;
+    }
+
+    .status-urgent {
+        color: #e53e3e;
+    }
+
+    .status-overdue {
+        color: #a0aec0;
+        text-decoration: line-through;
+    }
+
+    .btn-do-it {
+        background-color: #f7fafc;
+        color: #2d3748;
+        font-weight: 600;
+        font-size: 0.9rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 8px 20px;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-block;
+    }
+
+    .btn-do-it:hover {
+        background-color: #edf2f7;
+        color: #1a202c;
+    }
+
+    .stats-container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .stat-card {
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+    }
+</style>
+
+<div class="student-dashboard container-fluid">
     <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-4 mb-3">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">@item.AssignmentTitle</h5>
-                        <h6 class="card-subtitle mb-2 text-danger">Due: @item.DueDate.ToString("yyyy-MM-dd HH:mm")</h6>
-                        <p class="card-text text-truncate">@item.Description</p>
+        <div class="col-lg-9 mb-4">
+            <div class="main-board">
+                <table class="table-assignments">
+                    <thead>
+                        <tr>
+                            <th>Assignment Name</th>
+                            <th>Instructor</th>
+                            <th>Due Date & Time Left</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var timeRemaining = item.DueDate - DateTime.Now;
+                            var daysLeft = (int)timeRemaining.TotalDays;
+                            var hoursLeft = timeRemaining.Hours;
+                            
+                            var isOverdue = timeRemaining.TotalSeconds < 0;
+                            var isUrgent = daysLeft >= 0 && daysLeft <= 3 && !isOverdue;
+
+                            var statusClass = isOverdue ? "status-overdue" : (isUrgent ? "status-urgent" : "status-normal");
+                            var countdownMessage = "";
+
+                            if (isOverdue)
+                            {
+                                countdownMessage = "Overdue";
+                            }
+                            else if (daysLeft == 0)
+                            {
+                                countdownMessage = $"{hoursLeft} hours left";
+                            }
+                            else
+                            {
+                                countdownMessage = $"{daysLeft} days left";
+                            }
+
+                            <tr>
+                                <td>
+                                    <div class="course-title">@item.AssignmentTitle</div>
+                                </td>
+                                <td>
+                                    <div class="instructor-info">
+                                        <img src="https://ui-avatars.com/api/?name=Instructor&background=random" alt="Avatar" class="avatar-img" />
+                                        <span>Course Instructor</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="due-date-container">
+                                        <span class="due-date-text">@item.DueDate.ToString("MMM dd, yyyy h:mm tt")</span>
+                                        <span class="countdown-text @statusClass">@countdownMessage</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="/Student/Assignment/Details/@item.AssignmentId" class="btn-do-it">Do it now</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #e0f2fe; color: #0284c7;">
+                        
                     </div>
-                    <div class="card-footer bg-white border-0">
-                        <a href="/Student/Assignment/Details/@item.AssignmentId" class="btn btn-outline-primary w-100">View Details & Submit</a>
+                    <div>
+                        <h5 class="mb-0 fw-bold">@Model.Count()</h5>
+                        <small class="text-muted">Pending Tasks</small>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background-color: #dcfce3; color: #16a34a;">
+                        
+                    </div>
+                    <div>
+                        <h5 class="mb-0 fw-bold">0</h5>
+                        <small class="text-muted">Completed</small>
                     </div>
                 </div>
             </div>
-        }
+        </div>
     </div>
 </div>

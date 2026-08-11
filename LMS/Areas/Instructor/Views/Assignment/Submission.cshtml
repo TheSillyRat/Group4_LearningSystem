@@ -1,0 +1,146 @@
+﻿@model IEnumerable<LMS.Models.Assignment>
+
+@{
+    ViewData["Title"] = "Submissions";
+}
+
+<style>
+    .submissions-container {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+        padding: 24px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .submission-card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        overflow: hidden;
+        border: 1px solid #edf2f7;
+    }
+
+    .card-cover-img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        background-color: #f1f5f9;
+    }
+
+    .card-body-custom {
+        padding: 20px;
+    }
+
+    .assignment-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 8px;
+    }
+
+    .assignment-desc {
+        color: #718096;
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        font-size: 0.85rem;
+        color: #4a5568;
+    }
+
+    .status-badge {
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+
+    .status-active { color: #38a169; }
+    .status-pending { color: #d69e2e; }
+    .status-timeover { color: #e53e3e; background: #fff5f5; padding: 2px 8px; border-radius: 4px; }
+
+    .btn-group-custom {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .btn-settings {
+        flex: 1;
+        background-color: #f1ddf5;
+        color: #805ad5;
+        border: none;
+        border-radius: 6px;
+        padding: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .btn-view {
+        flex: 1;
+        background-color: #8b5cf6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        text-align: center;
+    }
+</style>
+
+<div class="submissions-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold">Upcoming Assignment (@Model.Count())</h4>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            var timeRemaining = item.DueDate - DateTime.Now;
+            var isOverdue = timeRemaining.TotalSeconds < 0;
+
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="submission-card">
+                    <!-- Ảnh bìa: lấy đường dẫn file đã upload. Nếu không hiển thị được, tự fallback về ảnh mặc định -->
+                    <img src="@item.Materials" 
+                         onerror="this.src='https://placehold.co/600x400/f1f5f9/a0aec0?text=No+Image+Available'" 
+                         alt="Cover" class="card-cover-img" />
+                    
+                    <div class="card-body-custom">
+                        <h5 class="assignment-title">@item.AssignmentTitle</h5>
+                        <p class="assignment-desc">@item.Description</p>
+
+                        <div class="info-row">
+                            <span><i class="bi bi-people"></i> Total Submitted: 0/30</span>
+                            <span><i class="bi bi-calendar"></i> Due: @item.DueDate.ToString("MMM d, yyyy")</span>
+                        </div>
+
+                        <div class="info-row">
+                            <span>
+                                <i class="bi bi-clock"></i> Time Remaining: 
+                                @(isOverdue ? "Due" : $"{timeRemaining.Days} days {timeRemaining.Hours} hours")
+                            </span>
+                            <span class="status-badge @(isOverdue ? "status-timeover" : "status-active")">
+                                Status: @(isOverdue ? "Time over" : "Active")
+                            </span>
+                        </div>
+
+                        <div class="btn-group-custom">
+                            <button class="btn-settings"><i class="bi bi-gear"></i> Settings</button>
+                            <a href="#" class="btn-view">View Submission</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

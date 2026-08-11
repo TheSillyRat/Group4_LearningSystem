@@ -88,7 +88,7 @@ namespace LMS.Services.Layout
                 {
                     Item("Manage Assignments", null, "/Instructor/Assignment"),
                     Item("Create Assignment", null, "/Instructor/Assignment/Create"),
-                    Item("Submissions", null, "#")
+                    Item("Submissions", null, "/Instructor/Assignment/Submissions")
                 }),
 
                 Parent("Assessments", "bi-patch-question", new List<SidebarItemViewModel>
