@@ -1,18 +1,19 @@
+<<<<<<< HEAD
 @{
     var sidebar = new LMS.ViewModels.Layout.SidebarViewModel
     {
         DisplayName = "Student Demo",
         Email = "student@gmail.com",
         RoleName = "Student",
+=======
+@inject LMS.Services.Layout.SidebarService SidebarService
+@using System.Security.Claims
+>>>>>>> origin/main
 
-        Items = new List<LMS.ViewModels.Layout.SidebarItemViewModel>
-        {
-            new()
-            {
-                Title = "Dashboard",
-                Icon = "bi bi-speedometer2",
-                Url = "#"
-            },
+@{
+    var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "Student";
+    var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? "User";
+    var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";
 
             new()
             {
@@ -30,7 +31,11 @@
                     new()
                     {
                         Title = "My Courses",
+<<<<<<< HEAD
                         Url = "/Student/Enrollment/MyCourses"
+=======
+                        Url = "/Instructor/Course"
+>>>>>>> origin/main
                     },
 
                     new()
@@ -118,26 +123,12 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
     @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
-
-    <!-- ==================== NAVBAR ==================== -->
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-            <div class="container-fluid">
-                <span class="navbar-brand text-warning">TEMPORARY ROLE SWITCHER (DELETE LATER):</span>
-                <div class="navbar-nav">
-                    <a class="nav-link text-white" href="/Admin/Dashboard/Index">[ Go to Admin ]</a>
-                    <a class="nav-link text-white" href="/Instructor/Course/Index">[ Go to Instructor ]</a>
-                    <a class="nav-link text-white" href="/Student/Course/Index">[ Go to Student ]</a>
-                </div>
-            </div>
-        </nav>
-    </header>
-
 
     <!-- ==================== MAIN LAYOUT ==================== -->
     <div class="layout-container">
@@ -154,21 +145,6 @@
         </main>
 
     </div>
-
-
-    <!-- ==================== FOOTER ==================== -->
-    <footer class="border-top footer text-muted">
-
-        <div class="container">
-            &copy; 2026 - LMS -
-            <a asp-area=""
-               asp-controller="Home"
-               asp-action="Privacy">
-                Privacy
-            </a>
-        </div>
-
-    </footer>
 
 
     <!-- ==================== SCRIPTS ==================== -->

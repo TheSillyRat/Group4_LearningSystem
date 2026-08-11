@@ -1,4 +1,4 @@
-﻿@model LMS.ViewModels.Layout.SidebarViewModel
+@model LMS.ViewModels.Layout.SidebarViewModel
 
 <aside class="sidebar">
 
@@ -13,7 +13,7 @@
             else
             {
                 <div class="default-avatar">
-                    @Model.DisplayName.Substring(0, 1).ToUpper()
+                    @(!string.IsNullOrEmpty(Model.DisplayName) ? Model.DisplayName.Substring(0, 1).ToUpper() : "U")
                 </div>
             }
         </div>
@@ -108,5 +108,16 @@
         }
 
     </nav>
+
+    <!-- Logout Button -->
+    <div class="sidebar-logout p-3 border-top border-secondary border-opacity-25 mt-auto">
+        <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="w-100">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-2 rounded-3 py-2 fw-medium shadow-sm">
+                <i class="bi bi-box-arrow-right fs-5"></i>
+                <span>Log Out</span>
+            </button>
+        </form>
+    </div>
 
 </aside>

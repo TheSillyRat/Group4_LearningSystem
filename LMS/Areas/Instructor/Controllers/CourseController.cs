@@ -40,21 +40,47 @@ namespace LMS.Areas.Instructor.Controllers
                 return View();
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Create(Course course)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Course course)
+        {
+            if (ModelState.IsValid)
             {
-                if (ModelState.IsValid)
+                // 1. Kiểm tra nếu bảng Users chưa có ai, tự động tạo 1 User Giảng viên mẫu
+                if (!await _context.Users.AnyAsync())
                 {
-                    _context.Add(course);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                return View(course);
-            }
+                    // Kiểm tra nếu bảng Role chưa có, tạo Role mẫu
+                    if (!await _context.Role.AnyAsync())
+                    {
+                        _context.Role.Add(new Role { RoleName = "Instructor" });
+                        await _context.SaveChangesAsync();
+                    }
 
-            //chỉnh sửa Course
-            [HttpGet]
+                    var defaultRole = await _context.Role.FirstAsync();
+                    var defaultUser = new User
+                    {
+                        FullName = "Instructor Demo",
+                        Email = "giangvien@lms.com",
+                        Password = "123",
+                        RoleId = defaultRole.RoleId
+                    };
+                    _context.Users.Add(defaultUser);
+                    await _context.SaveChangesAsync();
+                }
+
+                // 2. Gán InstructorId theo User có sẵn trong CSDL
+                var instructor = await _context.Users.FirstAsync();
+                course.InstructorId = instructor.UserId;
+
+                _context.Add(course);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(course);
+        }
+
+        //chỉnh sửa Course
+        [HttpGet]
             public async Task<IActionResult> Edit(int? id)
             {
                 if (id == null) return NotFound();

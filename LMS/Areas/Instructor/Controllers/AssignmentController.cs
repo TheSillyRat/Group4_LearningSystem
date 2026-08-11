@@ -1,20 +1,26 @@
 using LMS.Models;
 using LMS.Repositories.Interfaces;
 using LMS.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Areas.Instructor.Controllers
 {
     [Area("Instructor")]
+    [Authorize(Roles = "Instructor")]
     public class AssignmentController : Controller
     {
         private readonly IAssignmentService _assignmentService;
         private readonly IAssignmentRepository _assignmentRepository;
+        private readonly ApplicationDbContext _context; //Thêm DbContext
 
-        public AssignmentController(IAssignmentService assignmentService, IAssignmentRepository assignmentRepository)
+
+        public AssignmentController(IAssignmentService assignmentService, IAssignmentRepository assignmentRepository, ApplicationDbContext context)
         {
             _assignmentService = assignmentService;
             _assignmentRepository = assignmentRepository;
+            _context = context;
         }
 
         [HttpGet]
@@ -25,8 +31,10 @@ namespace LMS.Areas.Instructor.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Courses = await _context.Course.ToListAsync();
+            ViewBag.Modules = await _context.Module.ToListAsync();
             return View();
         }
 
@@ -39,6 +47,8 @@ namespace LMS.Areas.Instructor.Controllers
             ModelState.Remove("Submissions");
             if (!ModelState.IsValid)
             {
+                ViewBag.Courses = await _context.Course.ToListAsync();
+                ViewBag.Modules = await _context.Module.ToListAsync();
                 return View(assignment);
             }
 
@@ -75,6 +85,18 @@ namespace LMS.Areas.Instructor.Controllers
             }
 
             return RedirectToAction(nameof(Details), new { id = assignmentId });
+        }
+
+        // API lấy danh sách Module theo CourseId dạng JSON
+        [HttpGet]
+        public async Task<IActionResult> GetModulesByCourse(int courseId)
+        {
+            var modules = await _context.Module
+                .Where(m => m.CourseId == courseId)
+                .Select(m => new { id = m.ModuleId, name = m.ModuleName })
+                .ToListAsync();
+
+            return Json(modules);
         }
 
 

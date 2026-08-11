@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS.Models
@@ -21,6 +21,14 @@ namespace LMS.Models
         [Required]
         [StringLength(255)]
         public string Password { get; set; } = string.Empty;
+
+        [StringLength(255)]
+        public string? SecurityPassword { get; set; }
+
+        [StringLength(10)]
+        public string? ResetCode { get; set; }
+
+        public DateTime? ResetCodeExpiry { get; set; }
 
         [ForeignKey("Role")]
         public int RoleId { get; set; }
