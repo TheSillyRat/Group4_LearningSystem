@@ -68,7 +68,7 @@ namespace LMS.Services.Layout
 
                 Items = new List<SidebarItemViewModel>
 {
-                Item("Dashboard", "bi-speedometer2", "/Instructor/Dashboard"),
+                Item("Dashboard", "bi-speedometer2", "/Instructor/Home"),
 
                 Parent("Courses", "bi-book", new List<SidebarItemViewModel>
                 {

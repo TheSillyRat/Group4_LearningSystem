@@ -1,0 +1,21 @@
+﻿@model LMS.Models.InstructorDashboardViewModel
+
+@{
+    ViewData["Title"] = "Instructor Dashboard";
+}
+
+<div class="container-fluid py-4">
+    <h2 class="fw-bold mb-4">Welcome back, Instructor!</h2>
+
+    <div class="row">
+        <div class="col-12 mb-5">
+            <h4 class="mb-3 text-secondary">My Courses</h4>
+            <!--<partial name="_CourseWidget" model="Model.MyCourses" />-->
+        </div>
+
+        <div class="col-12">
+            <h4 class="mb-3 text-secondary">Assignments</h4>
+            <!----><partial name="AssignmentWidget" model="Model.RecentAssignments" />
+        </div>
+    </div>
+</div>

@@ -76,10 +76,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-<<<<<<< HEAD
-=======
-// Seed Data tự động khi ứng dụng khởi chạy
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -94,8 +91,5 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Lỗi xảy ra khi tự động nạp dữ liệu mẫu vào CSDL.");
     }
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
 app.Run();

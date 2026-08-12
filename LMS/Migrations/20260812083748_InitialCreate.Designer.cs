@@ -12,11 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.Designer.cs
+
     [Migration("20260812083748_InitialCreate")]
-=======
-    [Migration("20260809181824_InitialCreate")]
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.Designer.cs
+
+
     partial class InitialCreate
     {
         /// <inheritdoc />

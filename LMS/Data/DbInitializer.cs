@@ -7,10 +7,7 @@ namespace LMS.Data
     {
         public static void Initialize(ApplicationDbContext context)
         {
-<<<<<<< HEAD
-            // Automatically apply Migrations if database does not exist
-           
-=======
+
             try
             {
                 // Automatically apply Migrations if database does not exist
@@ -75,7 +72,7 @@ namespace LMS.Data
                 ");
             }
             catch { }
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
+
 
             // Tự động tạo bảng QuizResults nếu chưa tồn tại
             context.Database.ExecuteSqlRaw(@"

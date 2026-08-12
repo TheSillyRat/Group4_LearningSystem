@@ -1,0 +1,144 @@
+﻿@model IEnumerable<LMS.Models.Assignment>
+
+<style>
+    .widget-container {
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        width: 100%;
+        max-height: 400px;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+        .widget-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .widget-container::-webkit-scrollbar-track {
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .widget-container::-webkit-scrollbar-thumb {
+            background: #cbd5e0;
+            border-radius: 8px;
+        }
+
+            .widget-container::-webkit-scrollbar-thumb:hover {
+                background: #a0aec0;
+            }
+
+    .modern-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+        font-size: 0.875rem;
+        color: #4a5568;
+    }
+
+        .modern-table th {
+            color: #718096;
+            font-weight: 500;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            background-color: #ffffff;
+            z-index: 1;
+        }
+
+        .modern-table td {
+            padding: 16px 24px 16px 0;
+            border-bottom: 1px solid #f7fafc;
+            vertical-align: middle;
+        }
+
+        .modern-table tr:last-child td {
+            border-bottom: none;
+        }
+
+    .title-cell {
+        font-weight: 600;
+        color: #2d3748;
+        padding-left: 8px !important;
+    }
+
+    .modern-table th:first-child {
+        padding-left: 8px;
+    }
+
+    .date-badge {
+        background-color: #f7fafc;
+        color: #4a5568;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-view-submission {
+        background-color: #ffffff;
+        color: #2b6cb0;
+        border: 1px solid #e2e8f0;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-view-submission:hover {
+            background-color: #ebf8ff;
+            border-color: #90cdf4;
+            color: #2c5282;
+        }
+</style>
+
+<div class="widget-container">
+    <table class="modern-table">
+        <thead>
+            <tr>
+                <th>Assignment Name</th>
+                <th>Course</th>
+                <th>Due Date</th>
+                <th style="text-align: center;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="title-cell">@item.AssignmentTitle</td>
+                        <td>@(item.Course?.CourseName ?? "N/A")</td>
+                        <td>
+                            <span class="date-badge">
+                                @item.DueDate.ToString("MMM dd, yyyy")
+                            </span>
+                        </td>
+                        <td style="text-align: center;">
+                            <a asp-area="Instructor" asp-controller="Submission" asp-action="Index" asp-route-assignmentId="@item.AssignmentId" class="btn-view-submission" title="View Submissions">
+                                <i class="bi bi-eye"></i> View Submission
+                            </a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center py-5 text-muted">No assignments created yet.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,5 +1,8 @@
+using LMS.Data;
+using LMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Areas.Instructor.Controllers
 {
@@ -7,9 +10,29 @@ namespace LMS.Areas.Instructor.Controllers
     [Authorize(Roles = "Instructor")]
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext _context;
+
+        public HomeController(ApplicationDbContext context)
         {
-            return RedirectToAction("Index", "Assignment", new { area = "Instructor" });
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var dashboardData = new InstructorDashboardViewModel
+            {
+                RecentAssignments = await _context.Assignments
+                    .OrderBy(a => a.DueDate)
+                    .Take(5)
+                    .ToListAsync(),
+
+                MyCourses = await _context.Course
+                    .OrderByDescending(c => c.CourseId)
+                    .Take(4)
+                    .ToListAsync()
+            };
+
+            return View(dashboardData);
         }
     }
 }

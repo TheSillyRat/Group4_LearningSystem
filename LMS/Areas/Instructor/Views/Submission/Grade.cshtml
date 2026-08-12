@@ -1,0 +1,106 @@
+﻿@model LMS.Models.Submission
+@{
+    ViewData["Title"] = "Grade Submission";
+}
+
+<style>
+    .submit-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 40px;
+    }
+
+    .course-badge {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+
+    .assignment-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+
+    .student-work-box {
+        background-color: #f0fdf4; 
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 30px;
+    }
+
+    .grading-area {
+        background-color: #fffbeb;
+        border: 1px dashed #fde68a;
+        border-radius: 8px;
+        padding: 24px;
+    }
+</style>
+
+<div class="submit-container">
+    <div class="assignment-header">
+        <span class="course-badge">Student: @Model.Student?.FullName (ID: @Model.StudentId)</span>
+
+        <h2 class="fw-bold mb-2">@Model.Assignment?.AssignmentTitle</h2>
+
+        <div class="text-muted">Submitted on: @Model.SubmitDate.ToString("MMM dd, yyyy HH:mm")</div>
+    </div>
+
+    <div class="student-work-box">
+        <h5 class="fw-bold mb-3"><i class="bi bi-file-earmark-check"></i> Student's Submission</h5>
+
+        <div class="mb-4">
+            <h6 class="fw-semibold text-muted">Student's Comments:</h6>
+            <p class="text-dark bg-white p-3 rounded border">
+                @(string.IsNullOrEmpty(Model.StudentNotes) ? "No comments provided." : Model.StudentNotes)
+            </p>
+        </div>
+
+        <div>
+            <h6 class="fw-semibold text-muted">Attached File:</h6>
+            @if (!string.IsNullOrEmpty(Model.FilePath))
+            {
+                <a href="@Model.FilePath" class="btn btn-success" download>
+                    <i class="bi bi-download"></i> Download Student's File
+                </a>
+            }
+            else
+            {
+                <span class="text-danger fst-italic">No file attached.</span>
+            }
+        </div>
+    </div>
+</div>
+
+    <div class="grading-area">
+        <h5 class="fw-bold mb-3">Grading & Feedback</h5>
+
+    <form asp-area="Instructor" asp-controller="Submission" asp-action="Grade" method="post">
+        <input type="hidden" name="SubmissionId" value="1" />
+
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label class="fw-semibold">Score (0 - 100)</label>
+                    <input type="number" name="Score" class="form-control" min="0" max="100" required />
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="fw-semibold">Instructor Feedback (Optional)</label>
+                <textarea name="Feedback" class="form-control" rows="3" placeholder="Write feedback for the student..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary px-4">Save Grade</button>
+            <a href="/Instructor/Assignment/SubmissionsList" class="btn btn-light ms-2">Back to List</a>
+        </form>
+    </div>
+</div>

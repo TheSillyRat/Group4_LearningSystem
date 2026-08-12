@@ -110,12 +110,9 @@
 
             <div class="col-xl-4 col-md-6 mb-4">
                 <div class="submission-card">
-<<<<<<< HEAD
                     <img src="@item.AttachmentUrl" 
-                         onerror="this.src='https://placehold.co/600x400/f1f5f9/a0aec0?text=No+Image+Available'" 
-=======
+                         onerror="this.src='https://placehold.co/600x400/f1f5f9/a0aec0?text=No+Image+Available'" />
                     <img src="https://placehold.co/600x400/f1f5f9/a0aec0?text=Assignment" 
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
                          alt="Cover" class="card-cover-img" />
                     
                     <div class="card-body-custom">
@@ -139,7 +136,13 @@
 
                         <div class="btn-group-custom">
                             <button class="btn-settings"><i class="bi bi-gear"></i> Settings</button>
-                            <a href="#" class="btn-view">View Submission</a>
+                            <a asp-area="Instructor"
+                               asp-controller="Submission"
+                               asp-action="Index"
+                               asp-route-assignmentId="@item.AssignmentId"
+                               class="btn-view">
+                                View Submission
+                            </a>
                         </div>
                     </div>
                 </div>

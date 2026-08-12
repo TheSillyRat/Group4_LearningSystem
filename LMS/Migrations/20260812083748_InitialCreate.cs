@@ -93,17 +93,14 @@ namespace LMS.Migrations
                         name: "FK_Assignment_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
-                        principalColumn: "CourseId");
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.NoAction);
                     table.ForeignKey(
                         name: "FK_Assignment_Users_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Users",
-<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
-                        principalColumn: "UserId");
-=======
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.NoAction);
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -131,12 +128,8 @@ namespace LMS.Migrations
                         name: "FK_Enrollment_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
-                        principalColumn: "UserId");
-=======
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.NoAction);
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -164,12 +157,8 @@ namespace LMS.Migrations
                         name: "FK_ForumPost_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
-                        principalColumn: "UserId");
-=======
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.NoAction);
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -220,12 +209,8 @@ namespace LMS.Migrations
                         name: "FK_Submission_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
-<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
-                        principalColumn: "UserId");
-=======
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.NoAction);
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -252,12 +237,8 @@ namespace LMS.Migrations
                         name: "FK_ForumReplies_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
-<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
-                        principalColumn: "UserId");
-=======
                         principalColumn: "UserId",
                         onDelete: ReferentialAction.NoAction);
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -370,143 +351,44 @@ namespace LMS.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Assignment_CourseId",
-                table: "Assignment",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Assignment_InstructorId",
-                table: "Assignment",
-                column: "InstructorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Content_ModuleId",
-                table: "Content",
-                column: "ModuleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Courses_InstructorId",
-                table: "Courses",
-                column: "InstructorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_CourseId",
-                table: "Enrollment",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Enrollment_StudentId",
-                table: "Enrollment",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ForumPost_CourseId",
-                table: "ForumPost",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ForumPost_UserId",
-                table: "ForumPost",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ForumReplies_PostId",
-                table: "ForumReplies",
-                column: "PostId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ForumReplies_UserId",
-                table: "ForumReplies",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Module_CourseId",
-                table: "Module",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Questions_QuizId",
-                table: "Questions",
-                column: "QuizId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuizResults_QuizId",
-                table: "QuizResults",
-                column: "QuizId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_QuizResults_StudentId",
-                table: "QuizResults",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Quizzes_CourseId",
-                table: "Quizzes",
-                column: "CourseId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Quizzes_ModuleId",
-                table: "Quizzes",
-                column: "ModuleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Submission_AssignmentId",
-                table: "Submission",
-                column: "AssignmentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Submission_StudentId",
-                table: "Submission",
-                column: "StudentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_RoleId",
-                table: "Users",
-                column: "RoleId");
+            // Các lệnh CreateIndex
+            migrationBuilder.CreateIndex(name: "IX_Assignment_CourseId", table: "Assignment", column: "CourseId");
+            migrationBuilder.CreateIndex(name: "IX_Assignment_InstructorId", table: "Assignment", column: "InstructorId");
+            migrationBuilder.CreateIndex(name: "IX_Content_ModuleId", table: "Content", column: "ModuleId");
+            migrationBuilder.CreateIndex(name: "IX_Courses_InstructorId", table: "Courses", column: "InstructorId");
+            migrationBuilder.CreateIndex(name: "IX_Enrollment_CourseId", table: "Enrollment", column: "CourseId");
+            migrationBuilder.CreateIndex(name: "IX_Enrollment_StudentId", table: "Enrollment", column: "StudentId");
+            migrationBuilder.CreateIndex(name: "IX_ForumPost_CourseId", table: "ForumPost", column: "CourseId");
+            migrationBuilder.CreateIndex(name: "IX_ForumPost_UserId", table: "ForumPost", column: "UserId");
+            migrationBuilder.CreateIndex(name: "IX_ForumReplies_PostId", table: "ForumReplies", column: "PostId");
+            migrationBuilder.CreateIndex(name: "IX_ForumReplies_UserId", table: "ForumReplies", column: "UserId");
+            migrationBuilder.CreateIndex(name: "IX_Module_CourseId", table: "Module", column: "CourseId");
+            migrationBuilder.CreateIndex(name: "IX_Questions_QuizId", table: "Questions", column: "QuizId");
+            migrationBuilder.CreateIndex(name: "IX_QuizResults_QuizId", table: "QuizResults", column: "QuizId");
+            migrationBuilder.CreateIndex(name: "IX_QuizResults_StudentId", table: "QuizResults", column: "StudentId");
+            migrationBuilder.CreateIndex(name: "IX_Quizzes_CourseId", table: "Quizzes", column: "CourseId");
+            migrationBuilder.CreateIndex(name: "IX_Quizzes_ModuleId", table: "Quizzes", column: "ModuleId");
+            migrationBuilder.CreateIndex(name: "IX_Submission_AssignmentId", table: "Submission", column: "AssignmentId");
+            migrationBuilder.CreateIndex(name: "IX_Submission_StudentId", table: "Submission", column: "StudentId");
+            migrationBuilder.CreateIndex(name: "IX_Users_RoleId", table: "Users", column: "RoleId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Content");
-
-            migrationBuilder.DropTable(
-                name: "Enrollment");
-
-            migrationBuilder.DropTable(
-                name: "ForumReplies");
-
-            migrationBuilder.DropTable(
-                name: "Questions");
-
-            migrationBuilder.DropTable(
-                name: "QuizResults");
-
-            migrationBuilder.DropTable(
-                name: "Submission");
-
-            migrationBuilder.DropTable(
-                name: "ForumPost");
-
-            migrationBuilder.DropTable(
-                name: "Quizzes");
-
-            migrationBuilder.DropTable(
-                name: "Assignment");
-
-            migrationBuilder.DropTable(
-                name: "Module");
-
-            migrationBuilder.DropTable(
-                name: "Courses");
-
-            migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "Role");
+            migrationBuilder.DropTable(name: "Content");
+            migrationBuilder.DropTable(name: "Enrollment");
+            migrationBuilder.DropTable(name: "ForumReplies");
+            migrationBuilder.DropTable(name: "Questions");
+            migrationBuilder.DropTable(name: "QuizResults");
+            migrationBuilder.DropTable(name: "Submission");
+            migrationBuilder.DropTable(name: "ForumPost");
+            migrationBuilder.DropTable(name: "Quizzes");
+            migrationBuilder.DropTable(name: "Assignment");
+            migrationBuilder.DropTable(name: "Module");
+            migrationBuilder.DropTable(name: "Courses");
+            migrationBuilder.DropTable(name: "Users");
+            migrationBuilder.DropTable(name: "Role");
         }
     }
 }

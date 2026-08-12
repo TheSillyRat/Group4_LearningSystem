@@ -44,20 +44,43 @@ namespace LMS.Areas.Instructor.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Assignment assignment)
+        public async Task<IActionResult> Create(Assignment assignment, IFormFile Attachment)
         {
             ModelState.Remove("Course");
             ModelState.Remove("Instructor");
             ModelState.Remove("Submissions");
-            if (!ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
-                ViewBag.Courses = await _context.Course.ToListAsync();
-                ViewBag.Modules = await _context.Module.ToListAsync();
-                return View(assignment);
+                if (Attachment != null && Attachment.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "assignments");
+
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Attachment.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await Attachment.CopyToAsync(fileStream);
+                    }
+
+                    assignment.AttachmentUrl = "/uploads/assignments/" + uniqueFileName;
+                }
+
+                await _assignmentRepository.AddAssignmentAsync(assignment);
+
+                return RedirectToAction("Index", "Home", new { area = "Instructor" });
             }
 
-            await _assignmentRepository.AddAssignmentAsync(assignment);
-            return RedirectToAction(nameof(Details), new { id = assignment.AssignmentId });
+            ViewBag.Courses = await _context.Course.ToListAsync();
+            ViewBag.Modules = await _context.Module.ToListAsync();
+
+            return View(assignment);
         }
 
         [HttpGet]
@@ -102,44 +125,7 @@ namespace LMS.Areas.Instructor.Controllers
             return Json(modules);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Assignment model, IFormFile Attachment)
-        {
-            if (ModelState.IsValid)
-            {
-                if (Attachment != null && Attachment.Length > 0)
-                {
-                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "assignments");
-
-                    if (!Directory.Exists(uploadsFolder))
-                    {
-                        Directory.CreateDirectory(uploadsFolder);
-                    }
-
-                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Attachment.FileName;
-                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await Attachment.CopyToAsync(fileStream);
-                    }
-
-<<<<<<< HEAD
-                    model.AttachmentUrl = "/uploads/assignments/" + uniqueFileName;
-=======
-                    // Attachment saved
->>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
-                }
-
-                _context.Add(model);
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(model);
-        }
+        
 
         [HttpGet]
         public async Task<IActionResult> Submissions()
