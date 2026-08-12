@@ -1,33 +1,94 @@
 ﻿@model LMS.Models.Assignment
+@{
+    ViewData["Title"] = "Submit Assignment";
+}
 
-<div class="container-fluid">
-    <div class="card shadow-sm mb-4">
-        <div class="card-header bg-dark text-white">
-            <h4 class="mb-0">@Model.AssignmentTitle</h4>
+<style>
+    .submit-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        padding: 40px;
+    }
+
+    .course-badge {
+        background-color: #e0e7ff;
+        color: #4338ca;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-block;
+        margin-bottom: 16px;
+    }
+
+    .assignment-header {
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+    }
+
+    .submission-area {
+        background-color: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 24px;
+    }
+
+    .custom-textarea {
+        width: 100%;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 12px;
+        min-height: 150px;
+        resize: vertical;
+    }
+</style>
+
+<div class="submit-container">
+    <!-- Phần 1: Thông tin đề bài -->
+    <div class="assignment-header">
+        <span class="course-badge">Course: UX/UI Design - Module 1</span>
+        <h2 class="fw-bold mb-3">@Model.AssignmentTitle</h2>
+
+        <div class="d-flex gap-4 text-muted mb-3">
+            <span><i class="bi bi-calendar-x"></i> Due: @Model.DueDate.ToString("MMM dd, yyyy HH:mm")</span>
+            <span><i class="bi bi-award"></i> Max Score: 100</span>
         </div>
-        <div class="card-body">
-            <p><strong>Description:</strong> @Model.Description</p>
-            <p><strong>Due Date:</strong> <span class="text-danger">@Model.DueDate.ToString("yyyy-MM-dd HH:mm")</span></p>
-        </div>
+
+        <p class="text-dark">@Model.Description</p>
+
+        <!-- Nút tải file đề bài (nếu Instructor có up file đính kèm lúc tạo) -->
+        @if (!string.IsNullOrEmpty(Model.Materials))
+        {
+            <a href="@Model.Materials" class="btn btn-outline-secondary btn-sm mt-2" download>
+                <i class="bi bi-download"></i> Download Assignment Material
+            </a>
+        }
     </div>
 
-    <div class="card shadow-sm border-primary">
-        <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Submit Your Work</h5>
-        </div>
-        <div class="card-body">
-            <form asp-area="Student" asp-controller="Assignment" asp-action="SubmitWork" method="post">
-                <input type="hidden" name="assignmentId" value="@Model.AssignmentId" />
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Student ID (Mock):</label>
-                    <input type="number" name="studentId" class="form-control" required />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">File URL / Drive Link:</label>
-                    <input type="url" name="filePath" class="form-control" placeholder="https://..." required />
-                </div>
-                <button type="submit" class="btn btn-success">Submit Assignment</button>
-            </form>
-        </div>
+    <!-- Phần 2: Khu vực nộp bài của Student -->
+    <div class="submission-area">
+        <h5 class="fw-bold mb-4">Your Submission</h5>
+
+        <form asp-action="SubmitAssignment" asp-controller="Assignment" asp-area="Student" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="AssignmentId" value="@Model.AssignmentId" />
+
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Additional Comments / Description</label>
+                <textarea name="StudentNotes" class="custom-textarea" placeholder="Type your answer or notes here..."></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="fw-semibold mb-2">Upload File</label>
+                <input type="file" name="SubmittedFile" class="form-control" required />
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary px-5 py-2 fw-bold">Submit Assignment</button>
+            </div>
+        </form>
     </div>
 </div>

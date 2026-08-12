@@ -16,6 +16,8 @@ namespace LMS.Models
 
         [StringLength(1000)]
         public string? Description { get; set; }
+        [StringLength(500)]
+        public string? AttachmentUrl { get; set; }
 
         public DateTime DueDate { get; set; }
 

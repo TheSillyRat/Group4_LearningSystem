@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:LMS/Migrations/20260810121821_LMS.Designer.cs
-    [Migration("20260810121821_LMS")]
-    partial class LMS
-========
     [Migration("20260810124016_InitialCreate")]
-    partial class InitialCreate
->>>>>>>> Minh_Tai:LMS/Migrations/20260810124016_InitialCreate.Designer.cs
+    partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
