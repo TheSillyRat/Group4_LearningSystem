@@ -7,7 +7,7 @@
 <div class="container mt-4" style="max-width: 600px;">
     <h2>➕ Create New Course</h2>
     <hr />
-    <form asp-action="Create" method="post">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label">Course Name (*)</label>
             <input asp-for="CourseName" class="form-control" placeholder="Enter course name..." required />
@@ -16,6 +16,11 @@
         <div class="mb-3">
             <label class="form-label">Course Description</label>
             <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Image Course (Max 5MB, Format .jpg, .png...)</label>
+            <input type="file" name="imageFile" class="form-control" accept="image/*" />
         </div>
 
         <div class="mt-3">

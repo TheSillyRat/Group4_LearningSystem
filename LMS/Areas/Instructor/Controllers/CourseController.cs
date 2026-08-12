@@ -1,4 +1,5 @@
 using System.Data;
+using System.Security.Claims;
 using LMS.Data;
 using LMS.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,67 +11,114 @@ namespace LMS.Areas.Instructor.Controllers
         public class CourseController : Controller
         {
             private readonly ApplicationDbContext _context;         //khai báo DI
-            public CourseController(ApplicationDbContext context)   //tạo hàm dựng
+            private readonly IWebHostEnvironment _env;
+
+        public CourseController(ApplicationDbContext context, IWebHostEnvironment env)   //tạo hàm dựng
             {
                 _context = context;
+                _env = env;
             }
 
-            //danh sách Course
-            public async Task<IActionResult> Index()
+        // Danh sách Khóa học DO CHÍNH GIẢNG VIÊN ĐANG ĐĂNG NHẬP TẠO
+        public async Task<IActionResult> Index()
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name;
+
+            var currentInstructor = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail || u.FullName == userName);
+
+            if (currentInstructor == null)
             {
-                var courses = await _context.Course.Include(c => c.Instructor).ToListAsync();   //lấy tất cả danh sách khoá học
-                return View(courses);
+                return View(new List<Course>());
             }
 
-            //chi tiết Course 
-            public async Task<IActionResult> Details(int? id)
-            {
-                if (id == null) return NotFound();
+            // Lọc ra các Khóa học có InstructorId trùng với UserId của Giảng viên hiện tại
+            var courses = await _context.Course
+                .Include(c => c.Instructor)
+                .Where(c => c.InstructorId == currentInstructor.UserId)
+                .ToListAsync();
 
-                var course = await _context.Course.Include(c => c.Modules!).ThenInclude(m => m.Contents).Include(c => c.Quizzes).FirstOrDefaultAsync(m => m.CourseId == id);
-                if (course == null) return NotFound();
+            return View(courses);
+        }
 
-                return View(course);
-            }
+        // Chi tiết Course 
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
 
-            //tạo mới Course
-            [HttpGet]
-            public IActionResult Create()
-            {
-                return View();
-            }
+            var course = await _context.Course
+                .Include(c => c.Modules!)
+                    .ThenInclude(m => m.Contents)
+                .Include(c => c.Modules!)
+                    .ThenInclude(m => m.Quizzes)
+                .Include(c => c.Quizzes!)
+                    .ThenInclude(q => q.Module)
+                .FirstOrDefaultAsync(m => m.CourseId == id);
+            if (course == null) return NotFound();
+
+            return View(course);
+        }
+
+        // Tạo mới Course
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Course course)
+        public async Task<IActionResult> Create(Course course, IFormFile? imageFile)
         {
-            if (ModelState.IsValid)
-            {
-                // 1. Kiểm tra nếu bảng Users chưa có ai, tự động tạo 1 User Giảng viên mẫu
-                if (!await _context.Users.AnyAsync())
-                {
-                    // Kiểm tra nếu bảng Role chưa có, tạo Role mẫu
-                    if (!await _context.Role.AnyAsync())
-                    {
-                        _context.Role.Add(new Role { RoleName = "Instructor" });
-                        await _context.SaveChangesAsync();
-                    }
+            ModelState.Remove("Instructor");
+            ModelState.Remove("ImageUrl");
 
-                    var defaultRole = await _context.Role.FirstAsync();
-                    var defaultUser = new User
-                    {
-                        FullName = "Instructor Demo",
-                        Email = "giangvien@lms.com",
-                        Password = "123",
-                        RoleId = defaultRole.RoleId
-                    };
-                    _context.Users.Add(defaultUser);
-                    await _context.SaveChangesAsync();
+            // Xử lý kiểm tra file ảnh
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                if (imageFile.Length > 5 * 1024 * 1024)
+                {
+                    ModelState.AddModelError("", "The image size must be under 5MB!");
                 }
 
-                // 2. Gán InstructorId theo User có sẵn trong CSDL
-                var instructor = await _context.Users.FirstAsync();
-                course.InstructorId = instructor.UserId;
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var ext = Path.GetExtension(imageFile.FileName).ToLower();
+                if (!allowedExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("", "Only image format (.jpg, .jpeg, .png, .gif, .webp)!");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "courses");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+                    course.ImageUrl = "/uploads/courses/" + uniqueFileName;
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                var userEmail = User.FindFirstValue(ClaimTypes.Email);
+                var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name;
+                var currentInstructor = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail || u.FullName == userName);
+
+                if (currentInstructor != null)
+                {
+                    course.InstructorId = currentInstructor.UserId;
+                }
+                else
+                {
+                    var firstInstructor = await _context.Users.FirstAsync();
+                    course.InstructorId = firstInstructor.UserId;
+                }
 
                 _context.Add(course);
                 await _context.SaveChangesAsync();
@@ -91,32 +139,73 @@ namespace LMS.Areas.Instructor.Controllers
                 return View(course);
             }
 
-            [HttpPost]
-            [ValidateAntiForgeryToken]
-            public async Task<IActionResult> Edit(int id, Course course)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Course course, IFormFile? imageFile)
+        {
+            if (id != course.CourseId) return NotFound();
+
+            ModelState.Remove("Instructor");
+
+            if (imageFile != null && imageFile.Length > 0)
             {
-                if (id != course.CourseId) return NotFound();
+                // 1. Kiểm tra dung lượng dưới 5MB
+                if (imageFile.Length > 5 * 1024 * 1024)
+                {
+                    ModelState.AddModelError("", "The image size must be under 5MB!");
+                }
+
+                // 2. Kiểm tra định dạng ảnh
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+                var ext = Path.GetExtension(imageFile.FileName).ToLower();
+                if (!allowedExtensions.Contains(ext))
+                {
+                    ModelState.AddModelError("", "Only image format (.jpg, .jpeg, .png, .gif, .webp)!");
+                }
 
                 if (ModelState.IsValid)
                 {
-                    try
+                    string uploadsFolder = Path.Combine(_env.WebRootPath, "uploads", "courses");
+                    if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
+
+                    string uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(imageFile.FileName);
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        _context.Update(course);
-                        await _context.SaveChangesAsync();
+                        await imageFile.CopyToAsync(stream);
                     }
-                    catch (DbUpdateConcurrencyException)
+
+                    // Xóa ảnh cũ nếu có
+                    if (!string.IsNullOrEmpty(course.ImageUrl) && course.ImageUrl.StartsWith("/uploads/courses/"))
                     {
-                        if (!_context.Course.Any(e => e.CourseId == course.CourseId))
-                            return NotFound();
-                        else throw;
+                        string oldPath = Path.Combine(_env.WebRootPath, course.ImageUrl.TrimStart('/'));
+                        if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
                     }
-                    return RedirectToAction(nameof(Index));
+
+                    course.ImageUrl = "/uploads/courses/" + uniqueFileName;
                 }
-                return View(course);
             }
 
-            //xóa Course
-            [HttpGet]
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(course);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Course.Any(e => e.CourseId == course.CourseId)) return NotFound();
+                    else throw;
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(course);
+        }
+
+        //xóa Course
+        [HttpGet]
             public async Task<IActionResult> Delete(int? id)
             {
                 if (id == null) return NotFound();

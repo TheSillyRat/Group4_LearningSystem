@@ -1,41 +1,15 @@
-<<<<<<< HEAD
-@{
-    var sidebar = new LMS.ViewModels.Layout.SidebarViewModel
-    {
-        DisplayName = "Student Demo",
-        Email = "student@gmail.com",
-        RoleName = "Student",
-=======
 @inject LMS.Services.Layout.SidebarService SidebarService
 @using System.Security.Claims
->>>>>>> origin/main
 
 @{
     var roleName = User.FindFirstValue(ClaimTypes.Role) ?? "Student";
     var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? "User";
     var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";
 
-            new()
-            {
-                Title = "Courses",
-                Icon = "bi bi-book",
-
-                Children =
-                {
-                    new()
-                    {
-                        Title = "Browse Courses",
-                        Url = "/Student/Course/Index"
-                    },
-
-                    new()
-                    {
-                        Title = "My Courses",
-<<<<<<< HEAD
+    var sidebar = SidebarService.GetSidebar(roleName);
+    sidebar.DisplayName = userName;
+    sidebar.Email = userEmail;
                         Url = "/Student/Enrollment/MyCourses"
-=======
-                        Url = "/Instructor/Course"
->>>>>>> origin/main
                     },
 
                     new()

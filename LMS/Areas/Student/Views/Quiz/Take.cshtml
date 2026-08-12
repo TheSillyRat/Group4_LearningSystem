@@ -1,0 +1,125 @@
+@model LMS.Models.Quiz
+
+@{
+    ViewData["Title"] = "Take Quiz - " + Model.QuizTitle;
+    int durationMinutes = Model.Duration > 0 ? Model.Duration : 30;
+}
+
+<div class="container mt-4 mb-5" style="max-width: 900px;">
+    <!-- QUIZ HEADER & TIMER CARD -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+        <div class="card-header bg-primary text-white p-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div>
+                <span class="badge bg-warning text-dark mb-1">📝 Quiz Assessment</span>
+                <h3 class="mb-1 text-white fw-bold">@Model.QuizTitle</h3>
+                <p class="mb-0 text-white-50">Course: <strong>@(Model.Course?.CourseName ?? "N/A")</strong> @(Model.Module != null ? "| Module: " + Model.Module.ModuleName : "")</p>
+            </div>
+            <div class="text-end bg-white text-dark p-3 rounded-3 shadow-sm border">
+                <div class="small text-muted fw-bold text-uppercase mb-1">⏱️ Time Remaining</div>
+                <div id="countdownTimer" class="fs-3 fw-bold text-danger">@durationMinutes:00</div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Questions != null && Model.Questions.Any())
+    {
+        <form id="quizForm" asp-action="Submit" method="post">
+            <input type="hidden" name="quizId" value="@Model.QuizId" />
+
+            @{
+                int qNo = 1;
+            }
+            @foreach (var q in Model.Questions)
+            {
+                <div class="card border-0 shadow-sm rounded-3 mb-4">
+                    <div class="card-header bg-light p-3 d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-primary fs-5">Question @qNo</span>
+                        <span class="badge bg-info text-dark">
+                            @(q.QuestionType == "MultipleChoice" ? "Multiple Choice (Select All That Apply)" : "Single Choice (1 Correct Answer)")
+                        </span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="fw-bold text-dark mb-3">@q.QuestionText</h5>
+
+                        @if (q.QuestionType == "MultipleChoice")
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="q_@q.QuestionId" id="q_@(q.QuestionId)_A" value="A">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_A"><strong>A.</strong> @q.OptionA</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="q_@q.QuestionId" id="q_@(q.QuestionId)_B" value="B">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_B"><strong>B.</strong> @q.OptionB</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="q_@q.QuestionId" id="q_@(q.QuestionId)_C" value="C">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_C"><strong>C.</strong> @q.OptionC</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="q_@q.QuestionId" id="q_@(q.QuestionId)_D" value="D">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_D"><strong>D.</strong> @q.OptionD</label>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="q_@q.QuestionId" id="q_@(q.QuestionId)_A" value="A">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_A"><strong>A.</strong> @q.OptionA</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="q_@q.QuestionId" id="q_@(q.QuestionId)_B" value="B">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_B"><strong>B.</strong> @q.OptionB</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="q_@q.QuestionId" id="q_@(q.QuestionId)_C" value="C">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_C"><strong>C.</strong> @q.OptionC</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="q_@q.QuestionId" id="q_@(q.QuestionId)_D" value="D">
+                                <label class="form-check-label fs-6" for="q_@(q.QuestionId)_D"><strong>D.</strong> @q.OptionD</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                qNo++;
+            }
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg px-5 py-3 fw-bold shadow">🚀 Submit Quiz Answers</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-warning text-center p-5 rounded-3 shadow-sm">
+            <h4 class="alert-heading">⚠️ No Questions Available</h4>
+            <p class="mb-0">This quiz does not have any questions added yet by the instructor.</p>
+            <a asp-action="Learn" asp-controller="Course" asp-route-id="@Model.CourseId" class="btn btn-primary mt-3">⬅️ Back to Course</a>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // COUNTDOWN TIMER LOGIC
+        let totalSeconds = @(durationMinutes * 60);
+        const timerElement = document.getElementById("countdownTimer");
+
+        if (timerElement) {
+            const timerInterval = setInterval(function () {
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alert("⏰ Time is up! Your quiz will now be automatically submitted.");
+                    document.getElementById("quizForm").submit();
+                } else {
+                    totalSeconds--;
+                    let minutes = Math.floor(totalSeconds / 60);
+                    let seconds = totalSeconds % 60;
+                    if (seconds < 10) seconds = "0" + seconds;
+                    if (minutes < 10) minutes = "0" + minutes;
+                    timerElement.innerText = minutes + ":" + seconds;
+                }
+            }, 1000);
+        }
+    </script>
+}

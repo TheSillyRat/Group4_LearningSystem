@@ -20,22 +20,14 @@
             <select asp-for="ContentType" class="form-select">
                 <option value="PDF">PDF</option>
                 <option value="Slide">Slide (PPTX)</option>
-                <option value="Video">Video Link/File</option>
+                <option value="Video">Video File (MP4)</option>
                 <option value="Document">Word Doc</option>
             </select>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Paste Video/External Link (URL)</label>
-            <input asp-for="FileUrl" class="form-control" placeholder="https://www.youtube.com/watch?v=..." />
-        </div>
-
-        <div class="text-center fw-bold text-muted my-2">Or</div>
-
-        <div class="mb-3">
-            <label class="form-label">Choose File to Upload (PDF, Slide...)</label>
-            <input type="file" name="fileUpload" class="form-control" />
-
+            <label class="form-label">Choose File to Upload (*)</label>
+            <input type="file" name="fileUpload" class="form-control" required />
         </div>
 
         <div class="mb-3">
@@ -44,8 +36,8 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Display Order</label>
-            <input asp-for="DisplayOrder" type="number" class="form-control" value="1" />
+            <label class="form-label">Display Order (*)</label>
+            <input asp-for="DisplayOrder" type="number" class="form-control" required />
         </div>
 
         <button type="submit" class="btn btn-success">Upload & Save</button>

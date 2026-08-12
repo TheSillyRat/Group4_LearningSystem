@@ -1,0 +1,86 @@
+@model LMS.Models.QuizResult
+
+@{
+    ViewData["Title"] = "Quiz Result - " + (Model.Quiz?.QuizTitle ?? "Assessment");
+    var studentAnswers = ViewBag.StudentAnswers as Dictionary<int, string>;
+    bool isPassed = Model.Score >= 50.0;
+}
+
+<div class="container mt-4 mb-5" style="max-width: 900px;">
+    <!-- SCORE SUMMARY BANNER CARD -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 text-center overflow-hidden">
+        <div class="card-header @(isPassed ? "bg-success" : "bg-danger") text-white p-4">
+            <h1 class="display-4 fw-bold text-white mb-1">@(isPassed ? "🎉 Congratulations!" : "⚠️ Keep Trying!")</h1>
+            <p class="fs-5 mb-0 text-white-50">Quiz Submission Completed</p>
+        </div>
+        <div class="card-body p-4 bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-4 mb-3 mb-md-0 border-end">
+                    <span class="text-muted small uppercase fw-bold">FINAL SCORE</span>
+                    <h1 class="display-3 fw-bold text-primary mb-0">@Model.Score <span class="fs-5 text-muted">/ 100</span></h1>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0 border-end">
+                    <span class="text-muted small uppercase fw-bold">CORRECT ANSWERS</span>
+                    <h2 class="fw-bold text-dark mb-0">@Model.CorrectAnswers / @Model.TotalQuestions</h2>
+                </div>
+                <div class="col-md-4">
+                    <span class="text-muted small uppercase fw-bold">SUBMITTED AT</span>
+                    <h6 class="fw-bold text-dark mb-0">@Model.SubmittedAt.ToString("dd/MM/yyyy HH:mm")</h6>
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex justify-content-center gap-3">
+                <a asp-action="Take" asp-route-id="@Model.QuizId" class="btn btn-outline-warning fw-bold">🔄 Retake Quiz</a>
+                <a asp-controller="Course" asp-action="Learn" asp-route-id="@Model.Quiz?.CourseId" class="btn btn-primary fw-bold">📘 Back to Course</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAILED QUESTION FEEDBACK BREAKDOWN -->
+    @if (Model.Quiz?.Questions != null && Model.Quiz.Questions.Any())
+    {
+        <h4 class="fw-bold text-dark mb-3">🔍 Detailed Answer Breakdown</h4>
+        int qNo = 1;
+        foreach (var q in Model.Quiz.Questions)
+        {
+            string studentAnswer = studentAnswers != null && studentAnswers.ContainsKey(q.QuestionId) ? studentAnswers[q.QuestionId] : "Not Answered";
+            bool isCorrect = false;
+
+            if (q.QuestionType == "MultipleChoice")
+            {
+                if (!string.IsNullOrEmpty(studentAnswer) && !string.IsNullOrEmpty(q.CorrectAnswer))
+                {
+                    var expectedSet = q.CorrectAnswer.Split(',').Select(x => x.Trim().ToUpper()).OrderBy(x => x).ToList();
+                    var actualSet = studentAnswer.Split(',').Select(x => x.Trim().ToUpper()).OrderBy(x => x).ToList();
+                    isCorrect = expectedSet.SequenceEqual(actualSet);
+                }
+            }
+            else
+            {
+                isCorrect = !string.IsNullOrEmpty(studentAnswer) && !string.IsNullOrEmpty(q.CorrectAnswer) && studentAnswer.Trim().Equals(q.CorrectAnswer.Trim(), StringComparison.OrdinalIgnoreCase);
+            }
+
+            <div class="card border-0 shadow-sm rounded-3 mb-3 border-start border-4 @(isCorrect ? "border-success" : "border-danger")">
+                <div class="card-header bg-white p-3 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold text-dark fs-5">Question @qNo: @q.QuestionText</span>
+                    <span class="badge @(isCorrect ? "bg-success" : "bg-danger") fs-6">
+                        @(isCorrect ? "Correct ✔️" : "Incorrect ❌")
+                    </span>
+                </div>
+                <div class="card-body p-3 bg-light">
+                    <div class="mb-2">
+                        <strong>Your Answer:</strong>
+                        <span class="badge @(isCorrect ? "bg-success" : "bg-danger") fs-6 ms-1 text-wrap text-break" style="white-space: normal;">
+                            @(string.IsNullOrWhiteSpace(studentAnswer) ? "No answer given" : studentAnswer)
+                        </span>
+                    </div>
+                    <div>
+                        <strong>Correct Answer:</strong>
+                        <span class="badge bg-primary fs-6 ms-1 text-wrap text-break">@q.CorrectAnswer</span>
+                    </div>
+                </div>
+            </div>
+            qNo++;
+        }
+    }
+</div>

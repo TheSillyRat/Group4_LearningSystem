@@ -25,5 +25,7 @@ namespace LMS.Models
         public Course? Course { get; set; }
 
         public ICollection<Content>? Contents { get; set; }
+
+        public ICollection<Quiz>? Quizzes { get; set; }
     }
 }
