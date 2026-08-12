@@ -46,9 +46,10 @@ namespace LMS.Controllers
                 return View(model);
             }
 
+            var inputEmail = model.Email?.Trim().ToLower();
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == model.Email);
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == inputEmail);
 
             if (user == null || user.Password != model.Password)
             {

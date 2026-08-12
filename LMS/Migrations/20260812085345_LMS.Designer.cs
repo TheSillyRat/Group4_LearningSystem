@@ -12,7 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LMS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<< HEAD:LMS/Migrations/20260812085345_LMS.Designer.cs
     [Migration("20260812085345_LMS")]
+=======
+    [Migration("20260810121821_LMS")]
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260810121821_LMS.Designer.cs
     partial class LMS
     {
         /// <inheritdoc />

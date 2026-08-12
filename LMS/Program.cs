@@ -11,9 +11,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Cấu hình nâng giới hạn dung lượng Upload file Video (lên tới 1GB = 1,073,741,824 bytes)
+builder.Services.Configure<Microsoft.AspNetCore.Http.Features.FormOptions>(options =>
+{
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartBodyLengthLimit = 1073741824L; // 1 GB
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = 1073741824L; // 1 GB
+});
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+           .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning)));
 
 builder.Services.AddScoped<IAssignmentRepository, AssignmentRepository>();
 builder.Services.AddScoped<IAssignmentService, AssignmentService>();
@@ -63,6 +76,10 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+<<<<<<< HEAD
+=======
+// Seed Data tự động khi ứng dụng khởi chạy
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -77,5 +94,8 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "Lỗi xảy ra khi tự động nạp dữ liệu mẫu vào CSDL.");
     }
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
 app.Run();

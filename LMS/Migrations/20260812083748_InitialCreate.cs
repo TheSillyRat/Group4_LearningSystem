@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -98,7 +98,12 @@ namespace LMS.Migrations
                         name: "FK_Assignment_Users_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Users",
+<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
                         principalColumn: "UserId");
+=======
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -126,7 +131,12 @@ namespace LMS.Migrations
                         name: "FK_Enrollment_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
+<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
                         principalColumn: "UserId");
+=======
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -154,7 +164,12 @@ namespace LMS.Migrations
                         name: "FK_ForumPost_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
                         principalColumn: "UserId");
+=======
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -205,7 +220,12 @@ namespace LMS.Migrations
                         name: "FK_Submission_Users_StudentId",
                         column: x => x.StudentId,
                         principalTable: "Users",
+<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
                         principalColumn: "UserId");
+=======
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -232,7 +252,12 @@ namespace LMS.Migrations
                         name: "FK_ForumReplies_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
+<<<<<<< HEAD:LMS/Migrations/20260812083748_InitialCreate.cs
                         principalColumn: "UserId");
+=======
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.NoAction);
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b:LMS/Migrations/20260809181824_InitialCreate.cs
                 });
 
             migrationBuilder.CreateTable(

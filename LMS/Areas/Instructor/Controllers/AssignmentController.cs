@@ -125,7 +125,11 @@ namespace LMS.Areas.Instructor.Controllers
                         await Attachment.CopyToAsync(fileStream);
                     }
 
+<<<<<<< HEAD
                     model.AttachmentUrl = "/uploads/assignments/" + uniqueFileName;
+=======
+                    // Attachment saved
+>>>>>>> 45829e0b7360bb13107de38418a70609e2462c9b
                 }
 
                 _context.Add(model);
