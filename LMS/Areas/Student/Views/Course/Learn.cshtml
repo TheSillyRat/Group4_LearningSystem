@@ -3,16 +3,59 @@
 @{
     ViewData["Title"] = Model.CourseName + " - Learning View";
     var selectedContent = ViewBag.SelectedContent as LMS.Models.Content;
+    double progressVal = ViewBag.Progress ?? 0;
+    var completedContentIds = ViewBag.CompletedContentIds as HashSet<int> ?? new HashSet<int>();
+    var completedQuizIds = ViewBag.CompletedQuizIds as HashSet<int> ?? new HashSet<int>();
+    bool isSelectedContentCompleted = ViewBag.IsSelectedContentCompleted ?? false;
+
+    bool isVideoContent = selectedContent != null && (
+        (selectedContent.ContentType != null && (
+            selectedContent.ContentType.Contains("Video", StringComparison.OrdinalIgnoreCase) ||
+            selectedContent.ContentType.Contains("MP4", StringComparison.OrdinalIgnoreCase)
+        )) ||
+        (!string.IsNullOrEmpty(selectedContent.FileUrl) && (
+            selectedContent.FileUrl.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) ||
+            selectedContent.FileUrl.EndsWith(".webm", StringComparison.OrdinalIgnoreCase) ||
+            selectedContent.FileUrl.EndsWith(".mov", StringComparison.OrdinalIgnoreCase) ||
+            selectedContent.FileUrl.EndsWith(".mkv", StringComparison.OrdinalIgnoreCase)
+        ))
+    );
 }
 
 <div class="container-fluid mt-3 px-4">
-    <!-- TOP NAVIGATION BAR -->
-    <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 shadow-sm mb-4 border">
-        <div class="d-flex align-items-center gap-3">
-            <a asp-action="Index" class="btn btn-outline-secondary btn-sm">⬅️ Back to My Courses</a>
-            <h4 class="mb-0 fw-bold text-dark">📘 @Model.CourseName</h4>
+    <!-- TOP NAVIGATION & PROGRESS HEADER BAR -->
+    <div class="card p-3 mb-4 bg-white shadow-sm rounded-3 border">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm">⬅️ Back to My Courses</a>
+                <div>
+                    <h4 class="mb-0 fw-bold text-dark">📘 @Model.CourseName</h4>
+                    <span class="text-muted small">👨‍🏫 Instructor: <strong>@(Model.Instructor?.FullName?.Replace(" (Instructor)", "") ?? "N/A")</strong></span>
+                </div>
+            </div>
+            
+            <div class="text-end" style="min-width: 250px;">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <small class="fw-bold text-secondary">Course Progress</small>
+                    <span class="fw-bold text-primary fs-6" id="progressText">@progressVal%</span>
+                </div>
+                <div class="progress" style="height: 12px;">
+                    <div id="progressBar" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" style="width: @(progressVal)%;" aria-valuenow="@progressVal" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
         </div>
-        <span class="text-muted small">👨‍🏫 Instructor: <strong>@(Model.Instructor?.FullName?.Replace(" (Instructor)", "") ?? "N/A")</strong></span>
+
+        <!-- COURSE COMPLETED CONGRATULATIONS BANNER -->
+        <div id="completedBanner" class="alert alert-success mt-3 mb-0 d-flex align-items-center justify-content-between rounded-3 shadow-sm @(progressVal >= 100 ? "" : "d-none")">
+            <div class="d-flex align-items-center">
+                <span class="fs-1 me-3">🎉</span>
+                <div>
+                    <h5 class="alert-heading mb-0 fw-bold">Congratulations! Course Completed!</h5>
+                    <small>You have successfully completed 100% of all lessons and quizzes in this course.</small>
+                </div>
+            </div>
+            <button class="btn btn-success fw-bold px-3 shadow-sm">🎓 View Certificate</button>
+        </div>
     </div>
 
     <div class="row g-4">
@@ -34,9 +77,9 @@
                     {
                         <!-- VIEWER BASED ON CONTENT TYPE -->
                         <div class="viewer-container bg-white p-3 rounded-3 border mb-3 shadow-sm text-center">
-                            @if (selectedContent.ContentType == "Video" && !string.IsNullOrEmpty(selectedContent.FileUrl))
+                            @if (isVideoContent && !string.IsNullOrEmpty(selectedContent.FileUrl))
                             {
-                                <video controls class="w-100 rounded-3" style="max-height: 500px;" autoplay>
+                                <video id="mainVideoPlayer" controls class="w-100 rounded-3" style="max-height: 500px;" autoplay>
                                     <source src="@selectedContent.FileUrl" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
@@ -59,6 +102,39 @@
                                 <div class="p-5 text-muted">
                                     <h5>No media file attached to this content.</h5>
                                 </div>
+                            }
+                        </div>
+
+                        <!-- TOGGLE COMPLETION BUTTON BAR -->
+                        <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-3 border shadow-sm mb-3">
+                            <div>
+                                <h6 class="fw-bold text-dark mb-0">Status:</h6>
+                                @if (isVideoContent && !isSelectedContentCompleted)
+                                {
+                                    <small id="completionHelpText" class="text-danger fw-semibold">⚠️ Video requirement: Watch the video to the end to unlock completion.</small>
+                                }
+                                else if (isSelectedContentCompleted)
+                                {
+                                    <small id="completionHelpText" class="text-success fw-semibold">🎉 Lesson completed!</small>
+                                }
+                                else
+                                {
+                                    <small id="completionHelpText" class="text-muted">Click to toggle your completion status for this lesson.</small>
+                                }
+                            </div>
+                            @if (isVideoContent && !isSelectedContentCompleted)
+                            {
+                                <button id="btnToggleComplete" onclick="toggleComplete(@selectedContent.ContentId)" disabled class="btn btn-secondary fw-bold px-4 py-2 shadow-sm" style="pointer-events: none; opacity: 0.7;">
+                                    <span id="completeIcon">🔒</span>
+                                    <span id="completeText">Watch Video to Complete</span>
+                                </button>
+                            }
+                            else
+                            {
+                                <button id="btnToggleComplete" onclick="toggleComplete(@selectedContent.ContentId)" class="btn @(isSelectedContentCompleted ? "btn-success" : "btn-outline-success") fw-bold px-4 py-2 shadow-sm">
+                                    <span id="completeIcon">@(isSelectedContentCompleted ? "✅" : "☑️")</span>
+                                    <span id="completeText">@(isSelectedContentCompleted ? "Completed" : "Mark as Completed")</span>
+                                </button>
                             }
                         </div>
 
@@ -126,12 +202,20 @@
                                                     @foreach (var content in module.Contents.OrderBy(c => c.DisplayOrder))
                                                     {
                                                         bool isActive = selectedContent != null && selectedContent.ContentId == content.ContentId;
+                                                        bool isContentDone = completedContentIds.Contains(content.ContentId);
+
                                                         <a asp-action="Learn" asp-route-id="@Model.CourseId" asp-route-contentId="@content.ContentId" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2.5 px-3 @(isActive ? "active bg-primary text-white" : "")">
                                                             <div class="d-flex align-items-center text-truncate">
                                                                 <span class="me-2">
                                                                     @(content.ContentType == "Video" ? "🎥" : (content.ContentType == "PDF" ? "📕" : "📄"))
                                                                 </span>
-                                                                <span class="small fw-semibold text-truncate">@content.Title</span>
+                                                                <span class="small fw-semibold text-truncate me-1">@content.Title</span>
+                                                                <span id="chk_content_@content.ContentId">
+                                                                    @if (isContentDone)
+                                                                    {
+                                                                        <span class="badge bg-success ms-1">✔️</span>
+                                                                    }
+                                                                </span>
                                                             </div>
                                                             <span class="badge @(isActive ? "bg-light text-dark" : "bg-secondary") ms-2">@content.ContentType</span>
                                                         </a>
@@ -151,8 +235,15 @@
                                                     <ul class="list-unstyled mb-0 mt-1">
                                                         @foreach (var quiz in module.Quizzes)
                                                         {
+                                                            bool isQuizDone = completedQuizIds.Contains(quiz.QuizId);
                                                             <li class="px-2 py-1 bg-white rounded border mb-1 d-flex justify-content-between align-items-center small">
-                                                                <span>📝 @quiz.QuizTitle (@quiz.Duration mins)</span>
+                                                                <div>
+                                                                    <span>📝 @quiz.QuizTitle (@quiz.Duration mins)</span>
+                                                                    @if (isQuizDone)
+                                                                    {
+                                                                        <span class="badge bg-success ms-1">✔️ Passed</span>
+                                                                    }
+                                                                </div>
                                                                 <a asp-area="Student" asp-controller="Quiz" asp-action="Take" asp-route-id="@quiz.QuizId" class="btn btn-warning btn-xs py-0 px-2 fw-bold" style="font-size: 0.75rem;">Take Quiz</a>
                                                             </li>
                                                         }
@@ -182,10 +273,15 @@
                             <ul class="list-unstyled mb-0">
                                 @foreach (var quiz in courseQuizzes)
                                 {
+                                    bool isQuizDone = completedQuizIds.Contains(quiz.QuizId);
                                     <li class="px-3 py-2 bg-white rounded border mb-2 d-flex justify-content-between align-items-center">
                                         <div>
                                             <strong class="d-block text-dark small">📝 @quiz.QuizTitle</strong>
                                             <small class="text-muted" style="font-size: 0.75rem;">⏱️ @quiz.Duration mins</small>
+                                            @if (isQuizDone)
+                                            {
+                                                <span class="badge bg-success ms-1">✔️ Passed</span>
+                                            }
                                         </div>
                                         <a asp-area="Student" asp-controller="Quiz" asp-action="Take" asp-route-id="@quiz.QuizId" class="btn btn-warning btn-sm fw-bold py-1 px-2" style="font-size: 0.75rem;">Take Quiz</a>
                                     </li>
@@ -202,8 +298,11 @@
 @section Scripts {
     <script>
         const currentContentId = "@(selectedContent != null ? selectedContent.ContentId : 0)";
+        let isSelectedCompleted = @(isSelectedContentCompleted ? "true" : "false");
+        const isVideoContent = @(isVideoContent.ToString().ToLower());
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Load saved note
             if (currentContentId > 0) {
                 const savedNote = localStorage.getItem("my_notes_content_" + currentContentId);
                 if (savedNote) {
@@ -211,7 +310,113 @@
                     if (input) input.value = savedNote;
                 }
             }
+
+            // AUTO-COMPLETE VIDEO ON ENDED EVENT
+            const videoPlayer = document.getElementById("mainVideoPlayer");
+            if (videoPlayer) {
+                videoPlayer.addEventListener("ended", function () {
+                    console.log("Video ended automatically. Completing lesson...");
+                    if (!isSelectedCompleted && currentContentId > 0) {
+                        autoCompleteLesson(currentContentId);
+                    }
+                });
+            }
         });
+
+        function toggleComplete(contentId) {
+            // Nếu là bài học Video và chưa xem xong, chặn hoàn toàn thao tác click thủ công
+            if (isVideoContent && !isSelectedCompleted) {
+                alert("⚠️ Bạn phải xem hết video trước khi đánh dấu hoàn thành bài học này!");
+                return;
+            }
+            fetch('/Student/Course/ToggleContentCompletion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contentId: parseInt(contentId), toggle: true })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    isSelectedCompleted = data.isCompleted;
+                    updateCompletionUI(contentId, data.isCompleted, data.progress);
+                }
+            });
+        }
+
+        function autoCompleteLesson(contentId) {
+            fetch('/Student/Course/ToggleContentCompletion', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contentId: parseInt(contentId), toggle: false })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    isSelectedCompleted = data.isCompleted;
+                    updateCompletionUI(contentId, data.isCompleted, data.progress);
+                }
+            });
+        }
+
+        function updateCompletionUI(contentId, isCompleted, progress) {
+            // Update Toggle Button
+            const btn = document.getElementById("btnToggleComplete");
+            const icon = document.getElementById("completeIcon");
+            const text = document.getElementById("completeText");
+            const helpText = document.getElementById("completionHelpText");
+
+            if (btn && icon && text) {
+                btn.disabled = false; // Mở khóa nút bấm sau khi xem xong video
+                if (isCompleted) {
+                    btn.className = "btn btn-success fw-bold px-4 py-2 shadow-sm";
+                    icon.textContent = "✅";
+                    text.textContent = "Completed";
+                } else {
+                    btn.className = "btn btn-outline-success fw-bold px-4 py-2 shadow-sm";
+                    icon.textContent = "☑️";
+                    text.textContent = "Mark as Completed";
+                }
+            }
+
+            if (helpText) {
+                if (isCompleted) {
+                    helpText.className = "text-success fw-semibold";
+                    helpText.textContent = "🎉 Lesson completed!";
+                } else {
+                    helpText.className = "text-muted";
+                    helpText.textContent = "Click to toggle your completion status for this lesson.";
+                }
+            }
+
+            // Update Checkmark in Syllabus List
+            const checkmarkSpan = document.getElementById("chk_content_" + contentId);
+            if (checkmarkSpan) {
+                if (isCompleted) {
+                    checkmarkSpan.innerHTML = '<span class="badge bg-success ms-1">✔️</span>';
+                } else {
+                    checkmarkSpan.innerHTML = '';
+                }
+            }
+
+            // Update Progress Bar & Text
+            const pBar = document.getElementById("progressBar");
+            const pText = document.getElementById("progressText");
+            if (pBar && pText) {
+                pBar.style.width = progress + "%";
+                pBar.setAttribute("aria-valuenow", progress);
+                pText.textContent = progress + "%";
+            }
+
+            // Update Congratulations Banner
+            const banner = document.getElementById("completedBanner");
+            if (banner) {
+                if (progress >= 100) {
+                    banner.classList.remove("d-none");
+                } else {
+                    banner.classList.add("d-none");
+                }
+            }
+        }
 
         function savePersonalNote() {
             if (currentContentId > 0) {

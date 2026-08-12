@@ -71,6 +71,43 @@ namespace LMS.Areas.Instructor.Controllers
         {
             if (id == null) return NotFound();
 
+            // Tự động kiểm tra và tạo bảng Quizzes & Questions trong SQL Server nếu chưa có
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(@"
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Quizzes')
+                    BEGIN
+                        CREATE TABLE [Quizzes] (
+                            [QuizId] int NOT NULL IDENTITY,
+                            [QuizTitle] nvarchar(200) NOT NULL,
+                            [Description] nvarchar(1000) NULL,
+                            [DurationMinutes] int NOT NULL DEFAULT 15,
+                            [CourseId] int NULL,
+                            [ModuleId] int NULL,
+                            CONSTRAINT [PK_Quizzes] PRIMARY KEY ([QuizId])
+                        );
+                    END
+
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Questions')
+                    BEGIN
+                        CREATE TABLE [Questions] (
+                            [QuestionId] int NOT NULL IDENTITY,
+                            [QuestionText] nvarchar(1000) NOT NULL,
+                            [QuestionType] nvarchar(50) NOT NULL DEFAULT 'MultipleChoice',
+                            [OptionA] nvarchar(300) NULL,
+                            [OptionB] nvarchar(300) NULL,
+                            [OptionC] nvarchar(300) NULL,
+                            [OptionD] nvarchar(300) NULL,
+                            [CorrectAnswer] nvarchar(500) NULL,
+                            [QuizId] int NOT NULL,
+                            CONSTRAINT [PK_Questions] PRIMARY KEY ([QuestionId]),
+                            CONSTRAINT [FK_Questions_Quizzes_QuizId] FOREIGN KEY ([QuizId]) REFERENCES [Quizzes] ([QuizId]) ON DELETE CASCADE
+                        );
+                    END
+                ");
+            }
+            catch { }
+
             var quiz = await _context.Quizzes
                 .Include(q => q.Questions)
                 .Include(q => q.Course)

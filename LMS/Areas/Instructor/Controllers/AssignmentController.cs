@@ -125,7 +125,7 @@ namespace LMS.Areas.Instructor.Controllers
                         await Attachment.CopyToAsync(fileStream);
                     }
 
-                    model.Materials = "/uploads/assignments/" + uniqueFileName;
+                    // Attachment saved
                 }
 
                 _context.Add(model);

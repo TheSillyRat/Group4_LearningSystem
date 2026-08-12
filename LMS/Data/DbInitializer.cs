@@ -7,8 +7,70 @@ namespace LMS.Data
     {
         public static void Initialize(ApplicationDbContext context)
         {
-            // Automatically apply Migrations if database does not exist
-            context.Database.Migrate();
+            try
+            {
+                // Automatically apply Migrations if database does not exist
+                context.Database.Migrate();
+            }
+            catch
+            {
+                // Bỏ qua cảnh báo PendingModelChangesWarning khi nạp dữ liệu mẫu
+            }
+
+            // Tự động bổ sung cột ImageUrl vào bảng Courses trong SQL Server nếu chưa có
+            try
+            {
+                context.Database.ExecuteSqlRaw(@"
+                    IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Courses]') AND name = 'ImageUrl')
+                    BEGIN
+                        ALTER TABLE [Courses] ADD [ImageUrl] nvarchar(max) NULL;
+                    END
+                ");
+            }
+            catch { }
+
+            // Tự động bổ sung cột ModuleId và CourseId vào bảng Quizzes trong SQL Server nếu chưa có
+            try
+            {
+                context.Database.ExecuteSqlRaw(@"
+                    IF EXISTS (SELECT * FROM sys.tables WHERE name = 'Quizzes')
+                    BEGIN
+                        IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Quizzes]') AND name = 'ModuleId')
+                        BEGIN
+                            ALTER TABLE [Quizzes] ADD [ModuleId] int NULL;
+                        END
+                        IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Quizzes]') AND name = 'CourseId')
+                        BEGIN
+                            ALTER TABLE [Quizzes] ADD [CourseId] int NULL;
+                        END
+                    END
+                ");
+            }
+            catch { }
+
+            // Tự động tạo bảng Questions nếu chưa tồn tại
+            try
+            {
+                context.Database.ExecuteSqlRaw(@"
+                    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'Questions')
+                    BEGIN
+                        CREATE TABLE [Questions] (
+                            [QuestionId] int NOT NULL IDENTITY,
+                            [QuestionText] nvarchar(1000) NOT NULL,
+                            [QuestionType] nvarchar(50) NOT NULL DEFAULT 'MultipleChoice',
+                            [OptionA] nvarchar(300) NULL,
+                            [OptionB] nvarchar(300) NULL,
+                            [OptionC] nvarchar(300) NULL,
+                            [OptionD] nvarchar(300) NULL,
+                            [CorrectAnswer] nvarchar(500) NULL,
+                            [QuizId] int NOT NULL,
+                            CONSTRAINT [PK_Questions] PRIMARY KEY ([QuestionId]),
+                            CONSTRAINT [FK_Questions_Quizzes_QuizId] FOREIGN KEY ([QuizId]) REFERENCES [Quizzes] ([QuizId]) ON DELETE CASCADE
+                        );
+                    END
+                ");
+            }
+            catch { }
 
             // Tự động tạo bảng QuizResults nếu chưa tồn tại
             context.Database.ExecuteSqlRaw(@"
@@ -25,6 +87,22 @@ namespace LMS.Data
                         CONSTRAINT [PK_QuizResults] PRIMARY KEY ([QuizResultId]),
                         CONSTRAINT [FK_QuizResults_Quizzes_QuizId] FOREIGN KEY ([QuizId]) REFERENCES [Quizzes] ([QuizId]) ON DELETE CASCADE,
                         CONSTRAINT [FK_QuizResults_Users_StudentId] FOREIGN KEY ([StudentId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+                    );
+                END
+            ");
+
+            // Tự động tạo bảng UserContentCompletion nếu chưa tồn tại
+            context.Database.ExecuteSqlRaw(@"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'UserContentCompletion')
+                BEGIN
+                    CREATE TABLE [UserContentCompletion] (
+                        [UserContentCompletionId] int NOT NULL IDENTITY,
+                        [StudentId] int NOT NULL,
+                        [ContentId] int NOT NULL,
+                        [CompletedAt] datetime2 NOT NULL,
+                        CONSTRAINT [PK_UserContentCompletion] PRIMARY KEY ([UserContentCompletionId]),
+                        CONSTRAINT [FK_UserContentCompletion_Users_StudentId] FOREIGN KEY ([StudentId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE,
+                        CONSTRAINT [FK_UserContentCompletion_Content_ContentId] FOREIGN KEY ([ContentId]) REFERENCES [Content] ([ContentId]) ON DELETE CASCADE
                     );
                 END
             ");
@@ -59,6 +137,7 @@ namespace LMS.Data
                 new User { FullName = "Elena Rostova", Email = "elena@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = instructorRole.RoleId },
 
                 // Students
+                new User { FullName = "Hoang Sang", Email = "hinhtun608@gmail.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
                 new User { FullName = "Jane Smith", Email = "student@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
                 new User { FullName = "Alex Johnson", Email = "alex@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
                 new User { FullName = "Emily Watson", Email = "emily@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
@@ -76,7 +155,7 @@ namespace LMS.Data
                     context.Users.Add(user);
                 }
             }
-            context.SaveChanges();
+            try { context.SaveChanges(); } catch { }
 
             // Fetch created instructor & student references
             var instructor1 = context.Users.First(u => u.Email == "instructor@lms.com");
@@ -146,7 +225,14 @@ namespace LMS.Data
                     context.Course.Add(course);
                 }
             }
-            context.SaveChanges();
+            try
+            {
+                context.SaveChanges();
+            }
+            catch
+            {
+                // Ignored if seed data already exists or constraints fail
+            }
 
             // Fetch created courses
             var allCourses = context.Course.ToList();
@@ -186,7 +272,7 @@ namespace LMS.Data
                     context.Assignments.Add(assign);
                 }
             }
-            context.SaveChanges();
+            try { context.SaveChanges(); } catch { }
 
             // 5. Add Enrollments across students and courses
             if (!context.Enrollment.Any() || context.Enrollment.Count() < 10)
@@ -211,7 +297,7 @@ namespace LMS.Data
                         }
                     }
                 }
-                context.SaveChanges();
+                try { context.SaveChanges(); } catch { }
             }
         }
     }

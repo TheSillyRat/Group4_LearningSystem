@@ -38,6 +38,8 @@ namespace LMS.Areas.Instructor.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RequestSizeLimit(1073741824)] // 1 GB
+        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
         public async Task<IActionResult> Create(Content content, IFormFile? fileUpload)
         {
             ModelState.Remove("FileUrl");
@@ -101,8 +103,8 @@ namespace LMS.Areas.Instructor.Controllers
         // Xử lý Sửa Content (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [RequestSizeLimit(524288000)]
-        [RequestFormLimits(MultipartBodyLengthLimit = 524288000)]
+        [RequestSizeLimit(1073741824)] // 1 GB
+        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
         public async Task<IActionResult> Edit(int id, Content content, IFormFile? fileUpload)
         {
             if (id != content.ContentId) return NotFound();
