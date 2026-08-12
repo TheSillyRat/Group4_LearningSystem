@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Views\" />
+    <Folder Include="Areas\Instructor\Views\Forum\" />
+    <Folder Include="Areas\Student\Views\Forum\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

@@ -17,6 +17,8 @@ namespace LMS.Models
         public int StudentId { get; set; }
 
         public DateTime SubmitDate { get; set; }
+        [StringLength(2000)]
+        public string? StudentNotes { get; set; }
 
         [Column(TypeName = "nvarchar(max)")]
         public string? FilePath { get; set; }
