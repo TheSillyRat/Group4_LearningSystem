@@ -140,6 +140,51 @@ namespace LMS.Areas.Student.Controllers
             _context.QuizResults.Add(quizResult);
             await _context.SaveChangesAsync();
 
+            // Cập nhật lại Progress trong Enrollment cho học viên đối với khóa học này
+            var quizObj = await _context.Quizzes.FindAsync(quizId);
+            if (quizObj != null)
+            {
+                var enrollment = await _context.Enrollment
+                    .FirstOrDefaultAsync(e => e.StudentId == student.UserId && e.CourseId == quizObj.CourseId);
+
+                if (enrollment != null)
+                {
+                    var course = await _context.Course
+                        .Include(c => c.Modules!).ThenInclude(m => m.Contents)
+                        .Include(c => c.Modules!).ThenInclude(m => m.Quizzes)
+                        .Include(c => c.Quizzes)
+                        .FirstOrDefaultAsync(c => c.CourseId == quizObj.CourseId);
+
+                    if (course != null)
+                    {
+                        var allContents = course.Modules?.SelectMany(m => m.Contents ?? new List<Content>()).ToList() ?? new List<Content>();
+                        var allQuizzes = new List<Quiz>();
+                        if (course.Modules != null) foreach (var m in course.Modules) if (m.Quizzes != null) allQuizzes.AddRange(m.Quizzes);
+                        if (course.Quizzes != null) foreach (var q in course.Quizzes) if (!allQuizzes.Any(ex => ex.QuizId == q.QuizId)) allQuizzes.Add(q);
+
+                        int totalItems = allContents.Count + allQuizzes.Count;
+                        if (totalItems > 0)
+                        {
+                            var contentIds = allContents.Select(c => c.ContentId).ToList();
+                            var quizIds = allQuizzes.Select(q => q.QuizId).ToList();
+
+                            int completedContents = await _context.UserContentCompletions
+                                .Where(uc => uc.StudentId == student.UserId && contentIds.Contains(uc.ContentId))
+                                .CountAsync();
+
+                            int completedQuizzes = await _context.QuizResults
+                                .Where(qr => qr.StudentId == student.UserId && quizIds.Contains(qr.QuizId))
+                                .Select(qr => qr.QuizId)
+                                .Distinct()
+                                .CountAsync();
+
+                            enrollment.Progress = Math.Round((double)(completedContents + completedQuizzes) / totalItems * 100, 1);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
+            }
+
             // Lưu câu trả lời của học viên vào TempData để hiển thị ở trang Result
             TempData["StudentAnswers"] = System.Text.Json.JsonSerializer.Serialize(studentAnswers);
 

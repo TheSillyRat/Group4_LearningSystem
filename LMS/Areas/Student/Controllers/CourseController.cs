@@ -1,7 +1,6 @@
 using System.Security.Claims;
 using LMS.Data;
 using LMS.Models;
-using LMS.Models;
 using LMS.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,12 +28,14 @@ namespace LMS.Areas.Student.Controllers
 
             if (student == null) return View(new List<Course>());
 
-            var enrolledCourses = await _context.Enrollment
+            var enrollments = await _context.Enrollment
                 .Where(e => e.StudentId == student.UserId)
                 .Include(e => e.Course!)
                     .ThenInclude(c => c.Instructor)
-                .Select(e => e.Course!)
                 .ToListAsync();
+
+            ViewBag.CourseProgress = enrollments.ToDictionary(e => e.CourseId, e => e.Progress ?? 0);
+            var enrolledCourses = enrollments.Select(e => e.Course!).ToList();
 
             return View(enrolledCourses);
         }
@@ -138,6 +139,25 @@ namespace LMS.Areas.Student.Controllers
                 return RedirectToAction(nameof(Browse));
             }
 
+            // Tự động kiểm tra và bổ sung cột ModuleId, CourseId vào bảng Quizzes trong CSDL nếu thiếu
+            try
+            {
+                await _context.Database.ExecuteSqlRawAsync(@"
+                    IF EXISTS (SELECT * FROM sys.tables WHERE name = 'Quizzes')
+                    BEGIN
+                        IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Quizzes]') AND name = 'ModuleId')
+                        BEGIN
+                            ALTER TABLE [Quizzes] ADD [ModuleId] int NULL;
+                        END
+                        IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Quizzes]') AND name = 'CourseId')
+                        BEGIN
+                            ALTER TABLE [Quizzes] ADD [CourseId] int NULL;
+                        END
+                    END
+                ");
+            }
+            catch { }
+
             // Lấy thông tin Khóa học cùng toàn bộ Modules, Contents & Quizzes
             var course = await _context.Course
                 .Include(c => c.Instructor)
@@ -162,7 +182,186 @@ namespace LMS.Areas.Student.Controllers
             }
 
             ViewBag.SelectedContent = selectedContent;
+
+            // Đảm bảo bảng UserContentCompletion tồn tại trong SQL Server
+            await _context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'UserContentCompletion')
+                BEGIN
+                    CREATE TABLE [UserContentCompletion] (
+                        [UserContentCompletionId] int NOT NULL IDENTITY,
+                        [StudentId] int NOT NULL,
+                        [ContentId] int NOT NULL,
+                        [CompletedAt] datetime2 NOT NULL,
+                        CONSTRAINT [PK_UserContentCompletion] PRIMARY KEY ([UserContentCompletionId]),
+                        CONSTRAINT [FK_UserContentCompletion_Users_StudentId] FOREIGN KEY ([StudentId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE,
+                        CONSTRAINT [FK_UserContentCompletion_Content_ContentId] FOREIGN KEY ([ContentId]) REFERENCES [Content] ([ContentId]) ON DELETE CASCADE
+                    );
+                END
+            ");
+
+            // Lấy danh sách ID các bài học đã xem xong
+            var completedContentIds = await _context.UserContentCompletions
+                .Where(uc => uc.StudentId == student.UserId)
+                .Select(uc => uc.ContentId)
+                .ToListAsync();
+
+            // Lấy danh sách ID các bài quiz đã làm
+            var completedQuizIds = await _context.QuizResults
+                .Where(qr => qr.StudentId == student.UserId)
+                .Select(qr => qr.QuizId)
+                .Distinct()
+                .ToListAsync();
+
+            // Tính toán Tiến độ % hiện tại
+            double currentProgress = await RecalculateEnrollmentProgress(student.UserId, id);
+
+            ViewBag.Progress = currentProgress;
+            ViewBag.CompletedContentIds = new HashSet<int>(completedContentIds);
+            ViewBag.CompletedQuizIds = new HashSet<int>(completedQuizIds);
+            ViewBag.IsSelectedContentCompleted = selectedContent != null && completedContentIds.Contains(selectedContent.ContentId);
+
             return View(course);
         }
+
+        // AJAX Action: Đánh dấu Hoàn thành / Bỏ hoàn thành bài học
+        [HttpPost]
+        public async Task<IActionResult> ToggleContentCompletion([FromBody] ToggleCompletionRequest request)
+        {
+            var userEmail = User.FindFirstValue(ClaimTypes.Email);
+            var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name;
+            var student = await _context.Users.FirstOrDefaultAsync(u => u.Email == userEmail || u.FullName == userName);
+
+            if (student == null)
+            {
+                return Json(new { success = false, message = "Student not found" });
+            }
+
+            var content = await _context.Content
+                .Include(c => c.Module)
+                .FirstOrDefaultAsync(c => c.ContentId == request.ContentId);
+
+            if (content == null || content.Module == null)
+            {
+                return Json(new { success = false, message = "Content not found" });
+            }
+
+            int courseId = content.Module.CourseId;
+
+            await _context.Database.ExecuteSqlRawAsync(@"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'UserContentCompletion')
+                BEGIN
+                    CREATE TABLE [UserContentCompletion] (
+                        [UserContentCompletionId] int NOT NULL IDENTITY,
+                        [StudentId] int NOT NULL,
+                        [ContentId] int NOT NULL,
+                        [CompletedAt] datetime2 NOT NULL,
+                        CONSTRAINT [PK_UserContentCompletion] PRIMARY KEY ([UserContentCompletionId]),
+                        CONSTRAINT [FK_UserContentCompletion_Users_StudentId] FOREIGN KEY ([StudentId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE,
+                        CONSTRAINT [FK_UserContentCompletion_Content_ContentId] FOREIGN KEY ([ContentId]) REFERENCES [Content] ([ContentId]) ON DELETE CASCADE
+                    );
+                END
+            ");
+
+            var existing = await _context.UserContentCompletions
+                .FirstOrDefaultAsync(uc => uc.StudentId == student.UserId && uc.ContentId == request.ContentId);
+
+            bool isCompleted = false;
+            if (existing != null)
+            {
+                if (request.Toggle == true)
+                {
+                    _context.UserContentCompletions.Remove(existing);
+                    isCompleted = false;
+                }
+                else
+                {
+                    isCompleted = true;
+                }
+            }
+            else
+            {
+                _context.UserContentCompletions.Add(new UserContentCompletion
+                {
+                    StudentId = student.UserId,
+                    ContentId = request.ContentId,
+                    CompletedAt = DateTime.Now
+                });
+                isCompleted = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            double newProgress = await RecalculateEnrollmentProgress(student.UserId, courseId);
+            return Json(new { success = true, isCompleted, progress = newProgress });
+        }
+
+        private async Task<double> RecalculateEnrollmentProgress(int studentId, int courseId)
+        {
+            var course = await _context.Course
+                .Include(c => c.Modules!)
+                    .ThenInclude(m => m.Contents)
+                .Include(c => c.Modules!)
+                    .ThenInclude(m => m.Quizzes)
+                .Include(c => c.Quizzes)
+                .FirstOrDefaultAsync(c => c.CourseId == courseId);
+
+            if (course == null) return 0;
+
+            var allContents = course.Modules?.SelectMany(m => m.Contents ?? new List<Content>()).ToList() ?? new List<Content>();
+            var allQuizzes = new List<Quiz>();
+            if (course.Modules != null)
+            {
+                foreach (var m in course.Modules)
+                {
+                    if (m.Quizzes != null) allQuizzes.AddRange(m.Quizzes);
+                }
+            }
+            if (course.Quizzes != null)
+            {
+                foreach (var q in course.Quizzes)
+                {
+                    if (!allQuizzes.Any(existing => existing.QuizId == q.QuizId))
+                    {
+                        allQuizzes.Add(q);
+                    }
+                }
+            }
+
+            int totalItems = allContents.Count + allQuizzes.Count;
+            if (totalItems == 0) return 0;
+
+            var contentIds = allContents.Select(c => c.ContentId).ToList();
+            var quizIds = allQuizzes.Select(q => q.QuizId).ToList();
+
+            int completedContents = await _context.UserContentCompletions
+                .Where(uc => uc.StudentId == studentId && contentIds.Contains(uc.ContentId))
+                .CountAsync();
+
+            int completedQuizzes = await _context.QuizResults
+                .Where(qr => qr.StudentId == studentId && quizIds.Contains(qr.QuizId))
+                .Select(qr => qr.QuizId)
+                .Distinct()
+                .CountAsync();
+
+            int totalCompleted = completedContents + completedQuizzes;
+            double progress = Math.Round((double)totalCompleted / totalItems * 100, 1);
+
+            var enrollment = await _context.Enrollment
+                .FirstOrDefaultAsync(e => e.StudentId == studentId && e.CourseId == courseId);
+
+            if (enrollment != null)
+            {
+                enrollment.Progress = progress;
+                await _context.SaveChangesAsync();
+            }
+
+            return progress;
+        }
+    }
+
+    public class ToggleCompletionRequest
+    {
+        public int ContentId { get; set; }
+        public bool? Toggle { get; set; }
     }
 }
