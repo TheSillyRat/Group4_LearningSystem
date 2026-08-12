@@ -31,8 +31,8 @@ namespace LMS.Services.Layout
 
                     Parent("Courses", "bi-book", new List<SidebarItemViewModel>
                     {
-                        Item("Browse Courses", null, "/Student/Courses/Browse"),
-                        Item("My Courses", null, "/Student/Courses"),
+                        Item("Browse Courses", null, "/Student/Course/Browse"),
+                        Item("My Courses", null, "/Student/Course"),
                         Item("Course Materials", null, "/Student/Courses/Materials")
                     }),
 

@@ -29,6 +29,8 @@ namespace LMS.Data
 
         public DbSet<Quiz> Quizzes { get; set; }
         public DbSet<ForumReply> ForumReplies { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<QuizResult> QuizResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

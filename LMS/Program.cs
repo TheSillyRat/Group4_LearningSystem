@@ -35,6 +35,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+app.UseStaticFiles(); // Đảm bảo phục vụ file upload mới trực tiếp không bị lỗi 404
 app.UseRouting();
 
 app.UseAuthentication();

@@ -1,0 +1,52 @@
+@model LMS.Models.Content
+
+@{
+    ViewData["Title"] = "Edit Content";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <h2>✏️ Edit Content / Material</h2>
+    <hr />
+    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="ContentId" />
+        <input type="hidden" asp-for="ModuleId" />
+
+        <input type="hidden" asp-for="FileUrl" />
+
+        <div class="mb-3">
+            <label class="form-label">Title (*)</label>
+            <input asp-for="Title" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Content Type (*)</label>
+            <select asp-for="ContentType" class="form-select">
+                <option value="PDF">PDF File</option>
+                <option value="Slide">Slide (PPTX)</option>
+                <option value="Video">Video File (MP4)</option>
+                <option value="Document">Word Doc</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Upload New File to Replace (Optional)</label>
+            <input type="file" name="fileUpload" class="form-control" />
+            @if (!string.IsNullOrEmpty(Model.FileUrl))
+            {
+                <small class="text-success d-block mt-1">Current File: @Model.FileUrl</small>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Display Order</label>
+            <input asp-for="DisplayOrder" type="number" class="form-control" />
+        </div>
+
+        <button type="submit" class="btn btn-warning">Update Content</button>
+    </form>
+</div>

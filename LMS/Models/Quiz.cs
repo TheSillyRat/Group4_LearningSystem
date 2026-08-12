@@ -27,5 +27,12 @@ namespace LMS.Models
         public int CourseId { get; set; }
 
         public Course? Course { get; set; }
+
+        public ICollection<Question>? Questions { get; set; }
+
+        [ForeignKey("Module")]
+        public int? ModuleId { get; set; }
+
+        public Module? Module { get; set; }
     }
 }
