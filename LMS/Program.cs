@@ -63,10 +63,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-<<<<<<< HEAD
-=======
-
-// Seed Data tự động khi ứng dụng khởi chạy
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -82,5 +78,4 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
->>>>>>> origin/main
 app.Run();

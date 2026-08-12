@@ -61,15 +61,14 @@
         <p class="text-dark">@Model.Description</p>
 
         <!-- Nút tải file đề bài (nếu Instructor có up file đính kèm lúc tạo) -->
-        @if (!string.IsNullOrEmpty(Model.Materials))
+        @if (!string.IsNullOrEmpty(Model.AttachmentUrl))
         {
-            <a href="@Model.Materials" class="btn btn-outline-secondary btn-sm mt-2" download>
+            <a href="@Model.AttachmentUrl" class="btn btn-outline-secondary btn-sm mt-2" download>
                 <i class="bi bi-download"></i> Download Assignment Material
             </a>
         }
     </div>
 
-    <!-- Phần 2: Khu vực nộp bài của Student -->
     <div class="submission-area">
         <h5 class="fw-bold mb-4">Your Submission</h5>
 
