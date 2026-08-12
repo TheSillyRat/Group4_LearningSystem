@@ -10,6 +10,25 @@ namespace LMS.Data
             // Automatically apply Migrations if database does not exist
             context.Database.Migrate();
 
+            // Tự động tạo bảng QuizResults nếu chưa tồn tại
+            context.Database.ExecuteSqlRaw(@"
+                IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'QuizResults')
+                BEGIN
+                    CREATE TABLE [QuizResults] (
+                        [QuizResultId] int NOT NULL IDENTITY,
+                        [QuizId] int NOT NULL,
+                        [StudentId] int NOT NULL,
+                        [Score] float NOT NULL,
+                        [CorrectAnswers] int NOT NULL,
+                        [TotalQuestions] int NOT NULL,
+                        [SubmittedAt] datetime2 NOT NULL,
+                        CONSTRAINT [PK_QuizResults] PRIMARY KEY ([QuizResultId]),
+                        CONSTRAINT [FK_QuizResults_Quizzes_QuizId] FOREIGN KEY ([QuizId]) REFERENCES [Quizzes] ([QuizId]) ON DELETE CASCADE,
+                        CONSTRAINT [FK_QuizResults_Users_StudentId] FOREIGN KEY ([StudentId]) REFERENCES [Users] ([UserId]) ON DELETE CASCADE
+                    );
+                END
+            ");
+
             // 1. Add Roles
             if (!context.Role.Any())
             {
@@ -34,13 +53,13 @@ namespace LMS.Data
                 new User { FullName = "System Administrator", Email = "admin@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = adminRole.RoleId },
                 
                 // Instructors
-                new User { FullName = "John Doe (Instructor)", Email = "instructor@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = instructorRole.RoleId },
+                new User { FullName = "John Doe", Email = "instructor@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = instructorRole.RoleId },
                 new User { FullName = "Sarah Jenkins", Email = "sarah@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = instructorRole.RoleId },
                 new User { FullName = "Michael Chen", Email = "michael@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = instructorRole.RoleId },
                 new User { FullName = "Elena Rostova", Email = "elena@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = instructorRole.RoleId },
 
                 // Students
-                new User { FullName = "Jane Smith (Student)", Email = "student@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
+                new User { FullName = "Jane Smith", Email = "student@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
                 new User { FullName = "Alex Johnson", Email = "alex@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
                 new User { FullName = "Emily Watson", Email = "emily@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },
                 new User { FullName = "David Miller", Email = "david@lms.com", Password = "123456", SecurityPassword = "123456", RoleId = studentRole.RoleId },

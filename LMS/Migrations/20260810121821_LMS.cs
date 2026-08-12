@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LMS.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class LMS : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -91,13 +91,22 @@ namespace LMS.Migrations
                         name: "FK_Assignment_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
+<<<<<<<< HEAD:LMS/Migrations/20260809181824_InitialCreate.cs
+                        principalColumn: "CourseId",
+                        onDelete: ReferentialAction.Restrict);
+========
                         principalColumn: "CourseId");
+>>>>>>>> origin/main:LMS/Migrations/20260810121821_LMS.cs
                     table.ForeignKey(
                         name: "FK_Assignment_Users_InstructorId",
                         column: x => x.InstructorId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+<<<<<<<< HEAD:LMS/Migrations/20260809181824_InitialCreate.cs
+                        onDelete: ReferentialAction.Restrict);
+========
                         onDelete: ReferentialAction.NoAction);
+>>>>>>>> origin/main:LMS/Migrations/20260810121821_LMS.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -126,7 +135,11 @@ namespace LMS.Migrations
                         column: x => x.StudentId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+<<<<<<<< HEAD:LMS/Migrations/20260809181824_InitialCreate.cs
+                        onDelete: ReferentialAction.Restrict);
+========
                         onDelete: ReferentialAction.NoAction);
+>>>>>>>> origin/main:LMS/Migrations/20260810121821_LMS.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -155,7 +168,11 @@ namespace LMS.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+<<<<<<<< HEAD:LMS/Migrations/20260809181824_InitialCreate.cs
+                        onDelete: ReferentialAction.Restrict);
+========
                         onDelete: ReferentialAction.NoAction);
+>>>>>>>> origin/main:LMS/Migrations/20260810121821_LMS.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -231,7 +248,11 @@ namespace LMS.Migrations
                         column: x => x.StudentId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+<<<<<<<< HEAD:LMS/Migrations/20260809181824_InitialCreate.cs
+                        onDelete: ReferentialAction.Restrict);
+========
                         onDelete: ReferentialAction.NoAction);
+>>>>>>>> origin/main:LMS/Migrations/20260810121821_LMS.cs
                 });
 
             migrationBuilder.CreateTable(
@@ -259,7 +280,11 @@ namespace LMS.Migrations
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
+<<<<<<<< HEAD:LMS/Migrations/20260809181824_InitialCreate.cs
+                        onDelete: ReferentialAction.Restrict);
+========
                         onDelete: ReferentialAction.NoAction);
+>>>>>>>> origin/main:LMS/Migrations/20260810121821_LMS.cs
                 });
 
             migrationBuilder.CreateTable(

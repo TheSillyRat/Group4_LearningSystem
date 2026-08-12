@@ -16,10 +16,22 @@ namespace LMS.Areas.Instructor.Controllers
         }
 
         // Form tạo Module mới cho 1 Course (nhận vào courseId)
-        public IActionResult Create(int courseId)
+        public async Task<IActionResult> Create(int courseId)
         {
             ViewBag.CourseId = courseId;
-            return View();
+
+            // Tính vị trí DisplayOrder lớn nhất hiện tại thuộc Course này + 1
+            int maxOrder = await _context.Module
+                .Where(m => m.CourseId == courseId)
+                .MaxAsync(m => (int?)m.DisplayOrder) ?? 0;
+
+            var module = new Module
+            {
+                CourseId = courseId,
+                DisplayOrder = maxOrder + 1
+            };
+
+            return View(module);
         }
 
         [HttpPost]

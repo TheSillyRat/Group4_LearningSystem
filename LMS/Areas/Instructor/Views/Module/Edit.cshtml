@@ -1,0 +1,35 @@
+@model LMS.Models.Module
+
+@{
+    ViewData["Title"] = "Chỉnh sửa Chương học";
+}
+
+<div class="container mt-4" style="max-width: 600px;">
+    <h2>✏️ Edit Module</h2>
+    <hr />
+    <form asp-action="Edit" method="post">
+        <!-- Ẩn ModuleId và CourseId để giữ nguyên thuộc tính -->
+        <input type="hidden" asp-for="ModuleId" />
+        <input type="hidden" asp-for="CourseId" />
+
+        <div class="mb-3">
+            <label class="form-label">Module Name (*)</label>
+            <input asp-for="ModuleName" class="form-control" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Descriptions</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Display Order</label>
+            <input asp-for="DisplayOrder" type="number" class="form-control" required />
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">Update</button>
+            <a asp-controller="Course" asp-action="Details" asp-route-id="@Model.CourseId" class="btn btn-secondary">Cancle</a>
+        </div>
+    </form>
+</div>

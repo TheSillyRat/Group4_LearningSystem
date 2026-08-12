@@ -1,9 +1,13 @@
+using LMS.Data;
 using LMS.Models;
 using LMS.Repositories.Interfaces;
 using LMS.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace LMS.Areas.Instructor.Controllers
 {
@@ -87,7 +91,6 @@ namespace LMS.Areas.Instructor.Controllers
             return RedirectToAction(nameof(Details), new { id = assignmentId });
         }
 
-        // API lấy danh sách Module theo CourseId dạng JSON
         [HttpGet]
         public async Task<IActionResult> GetModulesByCourse(int courseId)
         {
@@ -98,6 +101,51 @@ namespace LMS.Areas.Instructor.Controllers
 
             return Json(modules);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Assignment model, IFormFile Attachment)
+        {
+            if (ModelState.IsValid)
+            {
+                if (Attachment != null && Attachment.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "assignments");
+
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Attachment.FileName;
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await Attachment.CopyToAsync(fileStream);
+                    }
+
+                    model.Materials = "/uploads/assignments/" + uniqueFileName;
+                }
+
+                _context.Add(model);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Submissions()
+        {
+            var assignments = await _context.Assignments.ToListAsync();
+
+            return View(assignments);
+        }
+
+
 
 
     }

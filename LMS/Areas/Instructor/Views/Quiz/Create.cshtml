@@ -2,42 +2,45 @@
 
 @{
     ViewData["Title"] = "Create Quiz";
+    var modules = ViewBag.Modules as List<LMS.Models.Module>;
 }
 
 <div class="container mt-4" style="max-width: 600px;">
-    <h2>📝 Create Quiz</h2>
+    <h2>📝 Create New Quiz</h2>
     <hr />
     <form asp-action="Create" method="post">
-        <input type="hidden" asp-for="CourseId" value="@ViewBag.CourseId" />
+        <input type="hidden" asp-for="CourseId" />
 
         <div class="mb-3">
             <label class="form-label">Quiz Title (*)</label>
-            <input asp-for="QuizTitle" class="form-control" required />
+            <input asp-for="QuizTitle" class="form-control" required placeholder="e.g. Module 1 Knowledge Check" />
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Description / Instructions</label>
-            <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+            <label class="form-label">Belongs to Module (Optional)</label>
+            <select asp-for="ModuleId" class="form-select">
+                <option value="">-- General Course Quiz (No Specific Module) --</option>
+                @if (modules != null)
+                {
+                    foreach (var m in modules)
+                    {
+                        <option value="@m.ModuleId">@m.ModuleName</option>
+                    }
+                }
+            </select>
         </div>
 
         <div class="mb-3">
-            <label class="form-label">Exam Duration (Minutes)</label>
-            <input asp-for="Duration" type="number" class="form-control" value="45" required />
+            <label class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
         </div>
+
 
         <div class="mb-3">
-            <label class="form-label">Open Date</label>
-            <input asp-for="OpenDate" type="datetime-local" class="form-control" 
-                   value="@Model.OpenDate.ToString("yyyy-MM-ddTHH:mm")" required />
+            <label class="form-label">Duration (Minutes)</label>
+            <input asp-for="Duration" type="number" class="form-control" required />
         </div>
 
-        <div class="mb-3">
-            <label class="form-label">Close Date</label>
-            <input asp-for="CloseDate" type="datetime-local" class="form-control" 
-                   value="@Model.CloseDate.ToString("yyyy-MM-ddTHH:mm")" required />
-        </div>
-
-        <button type="submit" class="btn btn-warning">Create Quiz</button>
-        <a asp-controller="Course" asp-action="Details" asp-route-id="@ViewBag.CourseId" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary w-100">Create Quiz</button>
     </form>
 </div>

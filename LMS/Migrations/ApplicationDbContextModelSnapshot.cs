@@ -113,6 +113,10 @@ namespace LMS.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<int>("InstructorId")
                         .HasColumnType("int");
 
@@ -255,6 +259,54 @@ namespace LMS.Migrations
                     b.ToTable("Module");
                 });
 
+            modelBuilder.Entity("LMS.Models.Question", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"));
+
+                    b.Property<string>("CorrectAnswer")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("OptionA")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("OptionB")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("OptionC")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("OptionD")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("QuestionType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("int");
+
+                    b.HasKey("QuestionId");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("Questions");
+                });
+
             modelBuilder.Entity("LMS.Models.Quiz", b =>
                 {
                     b.Property<int>("QuizId")
@@ -276,6 +328,9 @@ namespace LMS.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
+                    b.Property<int?>("ModuleId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("OpenDate")
                         .HasColumnType("datetime2");
 
@@ -287,6 +342,8 @@ namespace LMS.Migrations
                     b.HasKey("QuizId");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("ModuleId");
 
                     b.ToTable("Quizzes");
                 });
@@ -498,6 +555,17 @@ namespace LMS.Migrations
                     b.Navigation("Course");
                 });
 
+            modelBuilder.Entity("LMS.Models.Question", b =>
+                {
+                    b.HasOne("LMS.Models.Quiz", "Quiz")
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+                });
+
             modelBuilder.Entity("LMS.Models.Quiz", b =>
                 {
                     b.HasOne("LMS.Models.Course", "Course")
@@ -506,7 +574,13 @@ namespace LMS.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LMS.Models.Module", "Module")
+                        .WithMany("Quizzes")
+                        .HasForeignKey("ModuleId");
+
                     b.Navigation("Course");
+
+                    b.Navigation("Module");
                 });
 
             modelBuilder.Entity("LMS.Models.Submission", b =>
@@ -565,6 +639,13 @@ namespace LMS.Migrations
             modelBuilder.Entity("LMS.Models.Module", b =>
                 {
                     b.Navigation("Contents");
+
+                    b.Navigation("Quizzes");
+                });
+
+            modelBuilder.Entity("LMS.Models.Quiz", b =>
+                {
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("LMS.Models.Role", b =>

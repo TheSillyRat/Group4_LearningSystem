@@ -36,5 +36,8 @@ namespace LMS.Models
 
         public ICollection<ForumPost>? ForumPosts { get; set; }
         public ICollection<Quiz>? Quizzes { get; set; }
+
+        [StringLength(500)]
+        public string? ImageUrl { get; set; }
     }
 }

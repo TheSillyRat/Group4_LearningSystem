@@ -1,107 +1,207 @@
-﻿@model LMS.Models.Assignment
+@model LMS.Models.Assignment
 
 @{
     ViewData["Title"] = "Create Assignment";
 }
 
-<div class="assignment-page">
-    <div class="assignment-card">
+<style>
+    .create-task-container {
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+        padding: 40px;
+        max-width: 900px;
+        margin: 2rem auto;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        <div class="assignment-header">
-            <h1>Create Assignment</h1>
-            <p>Create a new assignment for your course</p>
+    .header-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #1a202c;
+        margin-bottom: 4px;
+    }
+
+    .header-subtitle {
+        color: #718096;
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+    }
+
+    .divider {
+        border-top: 1px solid #e2e8f0;
+        margin-bottom: 30px;
+    }
+
+    .custom-label {
+        font-weight: 600;
+        color: #2b6cb0;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .custom-input {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 10px 16px;
+        width: 100%;
+        color: #4a5568;
+        background-color: #f7fafc;
+        transition: border-color 0.2s;
+    }
+
+    .custom-input:focus {
+        border-color: #3182ce;
+        outline: none;
+        background-color: #ffffff;
+    }
+
+    .custom-textarea {
+        height: 130px;
+        resize: none;
+    }
+
+    .upload-box {
+        border: 2px dashed #cbd5e0;
+        border-radius: 8px;
+        padding: 30px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        height: 130px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .upload-box:hover {
+        border-color: #3182ce;
+        background-color: #ebf8ff;
+    }
+
+    .upload-text {
+        color: #2b6cb0;
+        font-weight: 600;
+    }
+
+    .btn-create-task {
+        background-color: #fc8181;
+        color: white;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 12px 24px;
+        transition: background-color 0.2s;
+    }
+
+    .btn-create-task:hover {
+        background-color: #f56565;
+        color: white;
+    }
+
+    .btn-close-task {
+        background-color: white;
+        color: #2b6cb0;
+        font-weight: 600;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 24px;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-close-task:hover {
+        border-color: #cbd5e0;
+        color: #2c5282;
+        background-color: #f7fafc;
+    }
+</style>
+
+<div class="create-task-container">
+    <div class="mb-2">
+        <h1 class="header-title">Create Assignment</h1>
+        <p class="header-subtitle">Create new assignment for your course</p>
+    </div>
+    
+    <div class="divider"></div>
+
+    <form asp-action="Create" asp-controller="Assignment" asp-area="Instructor" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <label asp-for="AssignmentTitle" class="custom-label">Assignment Title</label>
+                <input asp-for="AssignmentTitle" class="custom-input" placeholder="Select" />
+                <span asp-validation-for="AssignmentTitle" class="text-danger"></span>
+            </div>
+            
+            <div class="col-md-6">
+                <label for="CourseId" class="custom-label">Course</label>
+                <select id="CourseId" name="CourseId" class="custom-input" required>
+                    <option value="">Select course</option>
+                    @if (ViewBag.Courses != null)
+                    {
+                        foreach (var course in (IEnumerable<LMS.Models.Course>)ViewBag.Courses)
+                        {
+                            <option value="@course.CourseId">@course.CourseName</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="CourseId" class="text-danger"></span>
+            </div>
         </div>
 
-        <form asp-action="Create" asp-controller="Assignment" method="post" enctype="multipart/form-data">
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <label for="ModuleId" class="custom-label">Module / Section</label>
+                <select id="ModuleId" name="ModuleId" class="custom-input">
+                    <option value="">Select module</option>
+                    @if (ViewBag.Modules != null)
+                    {
+                        foreach (var module in (IEnumerable<LMS.Models.Module>)ViewBag.Modules)
+                        {
+                            <option value="@module.ModuleId">@module.ModuleName</option>
+                        }
+                    }
+                </select>
+            </div>
             
-            <div asp-validation-summary="ModelOnly" class="text-danger fw-bold mb-3"></div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label asp-for="AssignmentTitle">Assignment Title</label>
-                    <input asp-for="AssignmentTitle" class="form-control" placeholder="Enter assignment title" />
-                    <span asp-validation-for="AssignmentTitle" class="text-danger"></span>
-                </div>
-
-                <div class="form-group">
-                    <label for="CourseId">Course</label>
-
-                    <select id="CourseId"
-                            name="CourseId"
-                            class="form-control"
-                            required>
-
-                        <option value="">Select course</option>
-
-                        @if (ViewBag.Courses != null)
-                        {
-                            foreach (var course in (IEnumerable<LMS.Models.Course>)ViewBag.Courses)
-                            {
-                                <option value="@course.CourseId">@course.CourseName</option>
-                            }
-                        }
-
-                    </select>
-                    <span asp-validation-for="CourseId" class="text-danger"></span>
-                </div>
+            <div class="col-md-6">
+                <label asp-for="DueDate" class="custom-label">Due Date</label>
+                <input asp-for="DueDate" type="datetime-local" class="custom-input" />
+                <span asp-validation-for="DueDate" class="text-danger"></span>
             </div>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="ModuleId">Module / Section</label>
-                    <select id="ModuleId" name="ModuleId" class="form-control">
-                        <option value="">Select module</option>
-
-                        @if (ViewBag.Modules != null)
-                        {
-                            foreach (var module in (IEnumerable<LMS.Models.Module>)ViewBag.Modules)
-                            {
-                                <option value="@module.ModuleId">@module.ModuleName</option>
-                            }
-                        }
-
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="DueDate">Due Date</label>
-                    <input asp-for="DueDate" type="datetime-local" class="form-control" />
-                    <span asp-validation-for="DueDate" class="text-danger"></span>
-                </div>
-            </div>
-
-            <div class="form-group full-width">
-                <label asp-for="Description">Description / Instructions</label>
-                <textarea asp-for="Description" class="form-control assignment-description" placeholder="Write instructions for students..."></textarea>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4 mb-md-0">
+                <label asp-for="Description" class="custom-label">Description</label>
+                <textarea asp-for="Description" class="custom-input custom-textarea" placeholder="Type here"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="MaxScore">Maximum Score</label>
-                    <input type="number" id="MaxScore" name="MaxScore" class="form-control" value="100" min="0" />
-                </div>
-
-                <div class="form-group">
-                    <label for="Attachment">Attachment</label>
-                    <div class="file-upload">
-                        <label for="Attachment" class="file-upload-button">
-                            <i class="bi bi-paperclip"></i> Add File
-                        </label>
-                        <input type="file" id="Attachment" name="Attachment" hidden />
-                    </div>
+            
+            <div class="col-md-6">
+                <label class="custom-label">Photos and Files</label>
+                <label for="Attachment" class="upload-box w-50">
+                    <span class="upload-text">+ Add File</span>
+                </label>
+                <input type="file" id="Attachment" name="Attachment" hidden />
+                
+                <div class="mt-3">
+                    <label for="MaxScore" class="custom-label">Maximum Score</label>
+                    <input type="number" id="MaxScore" name="MaxScore" class="custom-input w-50" value="100" min="0" />
                 </div>
             </div>
+        </div>
 
-            <div class="form-group options-group">
-                <label>Options</label>
-                <div class="assignment-options">
-                    <label class="checkbox-option">
-                        <input type="checkbox" name="PublishImmediately" value="true" />
-                        <span>Publish immediately</span>
-                    </label>
-                </div>
+        <div class="mb-5">
+            <label class="custom-label d-block mb-3">Options</label>
+            <div class="d-flex align-items-center">
+                <input type="checkbox" id="PublishImmediately" name="PublishImmediately" value="true" class="me-2" style="width: 18px; height: 18px;" />
+                <label for="PublishImmediately" style="font-size: 0.9rem; color: #4a5568;">Publish immediately</label>
             </div>
+        </div>
 
             <input type="hidden" asp-for="InstructorId" value="1" />
 
@@ -112,7 +212,13 @@
 
         </form>
     </div>
+        <input type="hidden" asp-for="InstructorId" value="1" />
 
+        <div class="d-flex gap-3">
+            <button type="submit" class="btn-create-task">Create Assignment</button>
+            <a asp-action="Index" class="btn-close-task">Close without saving</a>
+        </div>
+    </form>
 </div>
 
 @section Scripts {
@@ -121,11 +227,9 @@
             var courseId = this.value;
             var moduleSelect = document.getElementById('ModuleId');
 
-            // Xóa sạch các option Module hiện tại
             moduleSelect.innerHTML = '<option value="">Select module</option>';
 
             if (courseId) {
-                // Gọi API lấy danh sách Module thuộc Course được chọn
                 fetch('/Instructor/Assignment/GetModulesByCourse?courseId=' + courseId)
                     .then(response => response.json())
                     .then(data => {
@@ -136,7 +240,7 @@
                             moduleSelect.appendChild(option);
                         });
                     })
-                    .catch(error => console.error('Lỗi lấy danh sách Module:', error));
+                    .catch(error => console.error('get modules error:', error));
             }
         });
     </script>

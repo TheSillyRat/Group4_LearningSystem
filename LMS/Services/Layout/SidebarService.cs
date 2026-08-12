@@ -31,8 +31,8 @@ namespace LMS.Services.Layout
 
                     Parent("Courses", "bi-book", new List<SidebarItemViewModel>
                     {
-                        Item("Browse Courses", null, "/Student/Courses/Browse"),
-                        Item("My Courses", null, "/Student/Courses"),
+                        Item("Browse Courses", null, "/Student/Course/Browse"),
+                        Item("My Courses", null, "/Student/Course"),
                         Item("Course Materials", null, "/Student/Courses/Materials")
                     }),
 
@@ -88,7 +88,7 @@ namespace LMS.Services.Layout
                 {
                     Item("Manage Assignments", null, "/Instructor/Assignment"),
                     Item("Create Assignment", null, "/Instructor/Assignment/Create"),
-                    Item("Submissions", null, "#")
+                    Item("Submissions", null, "/Instructor/Assignment/Submissions")
                 }),
 
                 Parent("Assessments", "bi-patch-question", new List<SidebarItemViewModel>

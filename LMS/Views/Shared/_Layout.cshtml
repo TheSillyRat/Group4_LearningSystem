@@ -6,23 +6,10 @@
     var userName = User.FindFirstValue(ClaimTypes.Name) ?? User.Identity?.Name ?? "User";
     var userEmail = User.FindFirstValue(ClaimTypes.Email) ?? "";
 
-            new()
-            {
-                Title = "Courses",
-                Icon = "bi bi-book",
-
-                Children =
-                {
-                    new()
-                    {
-                        Title = "Browse Courses",
-                        Url = "#"
-                    },
-
-                    new()
-                    {
-                        Title = "My Courses",
-                        Url = "/Instructor/Course"
+    var sidebar = SidebarService.GetSidebar(roleName);
+    sidebar.DisplayName = userName;
+    sidebar.Email = userEmail;
+                        Url = "/Student/Enrollment/MyCourses"
                     },
 
                     new()
