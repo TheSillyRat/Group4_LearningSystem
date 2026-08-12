@@ -1,0 +1,67 @@
+@model IEnumerable<LMS.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "My Courses";
+}
+
+<div class="container mt-4">
+    <h2>My Enrolled Courses</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-warning mt-4">
+            You are not enrolled in any courses yet. <a asp-controller="Course" asp-action="Index" class="alert-link">Browse courses</a> to get started!
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive mt-4">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Course Name</th>
+                        <th>Instructor</th>
+                        <th>Enrollment Date</th>
+                        <th>Progress</th>
+                        <th>Attendance</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.Course?.CourseName</strong>
+                            </td>
+                            <td>@item.Course?.Instructor?.FullName</td>
+                            <td>@item.EnrollmentDate.ToString("dd MMM yyyy")</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: @(item.Progress ?? 0)%;" aria-valuenow="@(item.Progress ?? 0)" aria-valuemin="0" aria-valuemax="100">@(item.Progress ?? 0)%</div>
+                                </div>
+                            </td>
+                            <td>
+                                @if (item.Attendance)
+                                {
+                                    <span class="badge bg-success">Attended</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary mb-1">Pending</span>
+                                    <form asp-controller="Enrollment" asp-action="MarkAttendance" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@item.CourseId" />
+                                        <button type="submit" class="btn btn-xs btn-outline-success" style="font-size: 0.75rem;">Check In</button>
+                                    </form>
+                                }
+                            </td>
+                            <td>
+                                <a asp-controller="Course" asp-action="Details" asp-route-id="@item.CourseId" class="btn btn-sm btn-outline-primary">Go to Course</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

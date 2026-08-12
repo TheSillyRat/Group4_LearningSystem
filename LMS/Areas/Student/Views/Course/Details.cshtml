@@ -1,0 +1,89 @@
+@model LMS.Models.Course
+
+@{
+    ViewData["Title"] = Model.CourseName;
+    bool isEnrolled = ViewBag.IsEnrolled ?? false;
+    double progress = ViewBag.Progress ?? 0;
+}
+
+<div class="container mt-4">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h2 class="card-title">@Model.CourseName</h2>
+            <h6 class="card-subtitle mb-2 text-muted">Instructor: @Model.Instructor?.FullName</h6>
+            <p class="card-text mt-3">@Model.Description</p>
+            
+            @if (!string.IsNullOrEmpty(Model.Prerequisite))
+            {
+                <p><strong>Prerequisite:</strong> @Model.Prerequisite</p>
+            }
+
+            @if (isEnrolled)
+            {
+                <div class="mt-4">
+                    <h5>Your Progress</h5>
+                    <div class="progress mb-2" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: @progress%;" aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">@progress%</div>
+                    </div>
+                </div>
+            }
+
+            <div class="mt-4">
+                <h4>Modules (@Model.Modules?.Count())</h4>
+                @if (Model.Modules != null && Model.Modules.Any())
+                {
+                    <ul class="list-group list-group-flush">
+                        @foreach (var module in Model.Modules)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                @module.ModuleName
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <p class="text-muted">No modules have been added to this course yet.</p>
+                }
+            </div>
+
+            <div class="mt-4 text-center">
+                @if (isEnrolled)
+                {
+                    if (progress < 100)
+                    {
+                        <form asp-controller="Enrollment" asp-action="IncrementProgress" method="post" class="d-inline">
+                            <input type="hidden" name="id" value="@Model.CourseId" />
+                            <button type="submit" class="btn btn-primary">Mark Next Module Complete</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-success disabled" disabled>Course Completed 🎉</button>
+                    }
+                    
+                    <form asp-controller="Enrollment" asp-action="CancelEnrollment" method="post" class="d-inline ms-2">
+                        <input type="hidden" name="id" value="@Model.CourseId" />
+                        <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Are you sure you want to cancel your enrollment?');">Cancel Enrollment</button>
+                    </form>
+                }
+                else
+                {
+                    <form asp-controller="Enrollment" asp-action="Enroll" method="post" class="d-inline">
+                        <input type="hidden" name="id" value="@Model.CourseId" />
+                        <button type="submit" class="btn btn-success">Enroll in Course</button>
+                    </form>
+                }
+                <a asp-action="Index" class="btn btn-secondary ms-2">Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>
