@@ -85,22 +85,48 @@
         <h5 class="fw-bold mb-3">Grading & Feedback</h5>
 
     <form asp-area="Instructor" asp-controller="Submission" asp-action="Grade" method="post">
-        <input type="hidden" name="SubmissionId" value="1" />
+        <input type="hidden" asp-for="SubmissionId" />
 
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label class="fw-semibold">Score (0 - 100)</label>
-                    <input type="number" name="Score" class="form-control" min="0" max="100" required />
-                </div>
+        @if (Model.Score.HasValue)
+        {
+            <div class="alert alert-secondary mb-4">
+                <i class="bi bi-info-circle-fill"></i> This assignment has been graded. You cannot change the score.
             </div>
 
-            <div class="mb-4">
-                <label class="fw-semibold">Instructor Feedback (Optional)</label>
-                <textarea name="Feedback" class="form-control" rows="3" placeholder="Write feedback for the student..."></textarea>
+            <div class="form-group mb-3">
+                <label class="fw-bold">Score</label>
+                <input type="number" asp-for="Score" class="form-control bg-light" readonly />
             </div>
 
-            <button type="submit" class="btn btn-primary px-4">Save Grade</button>
-            <a href="/Instructor/Assignment/SubmissionsList" class="btn btn-light ms-2">Back to List</a>
-        </form>
+            <div class="form-group mb-4">
+                <label class="fw-bold">Feedback</label>
+                <textarea asp-for="Feedback" class="form-control bg-light" rows="4" readonly></textarea>
+            </div>
+
+            <a asp-action="Index" asp-route-assignmentId="@Model.AssignmentId" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Back to Submissions
+            </a>
+        }
+        else
+        {
+            <div class="form-group mb-3">
+                <label class="fw-bold">Score</label>
+                <input type="number" asp-for="Score" class="form-control" required min="0" max="100" />
+            </div>
+
+            <div class="form-group mb-4">
+                <label class="fw-bold">Feedback</label>
+                <textarea asp-for="Feedback" class="form-control" rows="4"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle"></i> Save Grade
+            </button>
+
+            <a asp-action="Index" asp-route-assignmentId="@Model.AssignmentId" class="btn btn-outline-secondary ms-2">
+                Cancel
+            </a>
+        }
+    </form>
     </div>
 </div>

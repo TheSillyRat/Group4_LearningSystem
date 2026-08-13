@@ -27,7 +27,7 @@ namespace LMS.Services.Layout
 
                 Items = new List<SidebarItemViewModel>
                 {
-                    Item("Dashboard", "bi-speedometer2", "/Student/Dashboard"),
+                    Item("Dashboard", "bi-speedometer2", "/Student/Home"),
 
                     Parent("Courses", "bi-book", new List<SidebarItemViewModel>
                     {
@@ -45,10 +45,7 @@ namespace LMS.Services.Layout
                     Parent("Assessments", "bi-patch-question", new List<SidebarItemViewModel>
                     {
                         Item("Quizzes", null, "/Student/Quizzes"),
-                        Item("Exams", null, "/Student/Exams")
                     }),
-
-                    Item("Grades", "bi-bar-chart", "/Student/Grades"),
 
                     Item("Discussion", "bi-chat-dots", "/Student/Discussion"),
 
@@ -74,7 +71,8 @@ namespace LMS.Services.Layout
                 {
                     Item("My Courses", null, "/Instructor/Course"),
                     Item("Create Course", null, "/Instructor/Course/Create"),
-                    Item("Course Content", null, "/Instructor/Content")
+                    Item("Course Content", null, "/Instructor/Content"),
+                    Item("Quizzes", null, "/Instructor/Quiz")
                 }),
 
                 Parent("Students", "bi-people", new List<SidebarItemViewModel>
@@ -89,13 +87,6 @@ namespace LMS.Services.Layout
                     Item("Manage Assignments", null, "/Instructor/Assignment"),
                     Item("Create Assignment", null, "/Instructor/Assignment/Create"),
                     Item("Submissions", null, "/Instructor/Assignment/Submissions")
-                }),
-
-                Parent("Assessments", "bi-patch-question", new List<SidebarItemViewModel>
-                {
-                    Item("Quizzes", null, "/Instructor/Quiz"),
-                    Item("Exams", null, "/Instructor/Assessment"),
-                    Item("Results / Grading", null, "#")
                 }),
 
                 Item("Discussion", "bi-chat-dots", "#"),

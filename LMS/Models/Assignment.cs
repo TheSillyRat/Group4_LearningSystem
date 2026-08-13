@@ -30,6 +30,7 @@ namespace LMS.Models
         public Course? Course { get; set; }
 
         public User? Instructor { get; set; }
+        public bool IsPublished { get; set; } = true;
 
         public ICollection<Submission>? Submissions { get; set; }
     }

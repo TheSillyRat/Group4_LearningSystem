@@ -1,7 +1,9 @@
+using LMS.Data;
 using LMS.Models;
 using LMS.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Areas.Student.Controllers
 {
@@ -10,16 +12,25 @@ namespace LMS.Areas.Student.Controllers
     public class AssignmentController : Controller
     {
         private readonly IAssignmentRepository _assignmentRepository;
+        private readonly ApplicationDbContext _context;
 
         public AssignmentController(IAssignmentRepository assignmentRepository)
         {
             _assignmentRepository = assignmentRepository;
         }
 
+        public AssignmentController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var assignments = await _assignmentRepository.GetAllAssignmentsAsync();
+            var assignments = await _context.Assignments
+                .Include(a => a.Course)
+                .Where(a => a.IsPublished == true) 
+                .ToListAsync();
+
             return View(assignments);
         }
 

@@ -37,20 +37,29 @@
                             <td>
                                 @if (sub.Score.HasValue)
                                 {
-                                    <span class="badge bg-success">Graded</span>
+                                    <span class="badge bg-secondary">Graded</span>
                                 }
                                 else
                                 {
                                     <span class="badge bg-primary">Needs Grading</span>
                                 }
                             </td>
-                            <td class="fw-bold text-dark">
-                                @(sub.Score.HasValue ? sub.Score.Value.ToString() : "-")
-                            </td>
+
+                            <td>@(sub.Score.HasValue ? sub.Score.Value.ToString() : "-")</td>
+
                             <td>
-                                <a asp-area="Instructor" asp-controller="Submission" asp-action="Grade" asp-route-id="@sub.SubmissionId" class="btn btn-outline-success btn-sm rounded-pill px-3">
-                                    <i class="bi bi-pencil-square"></i> Grade
-                                </a>
+                                @if (sub.Score.HasValue)
+                                {
+                                    <a asp-area="Instructor" asp-controller="Submission" asp-action="Grade" asp-route-id="@sub.SubmissionId" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                        <i class="bi bi-eye"></i> View Result
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a asp-area="Instructor" asp-controller="Submission" asp-action="Grade" asp-route-id="@sub.SubmissionId" class="btn btn-outline-success btn-sm rounded-pill px-3">
+                                        <i class="bi bi-pencil-square"></i> Grade
+                                    </a>
+                                }
                             </td>
                         </tr>
                     }
