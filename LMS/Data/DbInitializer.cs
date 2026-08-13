@@ -30,6 +30,21 @@ namespace LMS.Data
             }
             catch { }
 
+            // Tự động bổ sung cột StudentNotes vào bảng Submission trong SQL Server nếu chưa có
+            try
+            {
+                context.Database.ExecuteSqlRaw(@"
+                    IF EXISTS (SELECT * FROM sys.tables WHERE name = 'Submission')
+                    BEGIN
+                        IF NOT EXISTS (SELECT * FROM sys.columns WHERE object_id = OBJECT_ID(N'[Submission]') AND name = 'StudentNotes')
+                        BEGIN
+                            ALTER TABLE [Submission] ADD [StudentNotes] nvarchar(2000) NULL;
+                        END
+                    END
+                ");
+            }
+            catch { }
+
             // Tự động bổ sung cột ModuleId và CourseId vào bảng Quizzes trong SQL Server nếu chưa có
             try
             {
@@ -293,7 +308,7 @@ namespace LMS.Data
                                 StudentId = st.UserId,
                                 CourseId = crs.CourseId,
                                 EnrollmentDate = DateTime.Now.AddDays(-rand.Next(1, 60)),
-                                Progress = rand.Next(15, 95),
+                                Progress = 0,
                                 Attendance = true
                             });
                         }

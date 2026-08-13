@@ -493,6 +493,32 @@ namespace LMS.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("LMS.Models.UserContentCompletion", b =>
+                {
+                    b.Property<int>("UserContentCompletionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserContentCompletionId"));
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ContentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserContentCompletionId");
+
+                    b.HasIndex("ContentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("UserContentCompletion");
+                });
+
             modelBuilder.Entity("LMS.Models.Assignment", b =>
                 {
                     b.HasOne("LMS.Models.Course", "Course")
@@ -677,6 +703,25 @@ namespace LMS.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("LMS.Models.UserContentCompletion", b =>
+                {
+                    b.HasOne("LMS.Models.Content", "Content")
+                        .WithMany()
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LMS.Models.User", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Content");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("LMS.Models.Assignment", b =>
