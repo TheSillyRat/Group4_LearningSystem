@@ -34,7 +34,14 @@ namespace LMS.Areas.Student.Controllers
                     .ThenInclude(c => c.Instructor)
                 .ToListAsync();
 
-            ViewBag.CourseProgress = enrollments.ToDictionary(e => e.CourseId, e => e.Progress ?? 0);
+            var courseProgressMap = new Dictionary<int, double>();
+            foreach (var e in enrollments)
+            {
+                double prog = await RecalculateEnrollmentProgress(student.UserId, e.CourseId);
+                courseProgressMap[e.CourseId] = prog;
+            }
+
+            ViewBag.CourseProgress = courseProgressMap;
             var enrolledCourses = enrollments.Select(e => e.Course!).ToList();
 
             return View(enrolledCourses);
